@@ -1,0 +1,465 @@
+{
+  "provider": {
+    "name": "todo_api"
+  },
+  "consumer": {
+    "name": "jvm_todo_client"
+  },
+  "interactions": [
+    {
+      "description": "a new todo",
+      "request": {
+        "method": "POST",
+        "path": "/todo",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "status": "TODO",
+          "text": "Don't forget the milk",
+          "category": "shopping",
+          "tags": [
+            "groceries",
+            "food"
+          ]
+        },
+        "matchingRules": {
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "rev": "string",
+          "id": "string",
+          "text": "string",
+          "category": "string",
+          "status": "string",
+          "tags": [
+            "string",
+            "string"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.rev": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.text": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.status": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.category": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.tags[0]": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.tags[1]": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        },
+        "generators": {
+          "body": {
+            "$.id": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.rev": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.text": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.status": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.category": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.tags[0]": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.tags[1]": {
+              "type": "RandomString",
+              "size": 20
+            }
+          }
+        }
+      },
+      "providerStates": [
+        {
+          "name": "an empty repository"
+        }
+      ]
+    },
+    {
+      "description": "a deletion",
+      "request": {
+        "method": "DELETE",
+        "path": "/todo/-MLqrG6LkLkkKc1iMLBt"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "rev": "string",
+          "id": "string",
+          "text": "string",
+          "category": "string",
+          "status": "string",
+          "tags": [
+            "string",
+            "string"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.rev": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.text": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.status": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.category": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.tags[0]": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.tags[1]": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        },
+        "generators": {
+          "body": {
+            "$.id": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.rev": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.text": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.status": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.category": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.tags[0]": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.tags[1]": {
+              "type": "RandomString",
+              "size": 20
+            }
+          }
+        }
+      },
+      "providerStates": [
+        {
+          "name": "an existing todo with id=--MLqrG6LkLkkKc1iMLBt"
+        }
+      ]
+    },
+    {
+      "description": "an update",
+      "request": {
+        "method": "PUT",
+        "path": "/todo/-MLqrG6LkLkkKc1iMLBt",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "rev": "-MLivp1BrS59mMbSN7Jr",
+          "status": "DONE",
+          "text": "Don't forget the milk",
+          "category": "shopping",
+          "tags": [
+            "groceries",
+            "food"
+          ]
+        },
+        "matchingRules": {
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "rev": "string",
+          "id": "string",
+          "text": "string",
+          "category": "string",
+          "status": "string",
+          "tags": [
+            "string",
+            "string"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.rev": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.text": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.status": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.category": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.tags[0]": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.tags[1]": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        },
+        "generators": {
+          "body": {
+            "$.id": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.rev": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.text": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.status": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.category": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.tags[0]": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.tags[1]": {
+              "type": "RandomString",
+              "size": 20
+            }
+          }
+        }
+      },
+      "providerStates": [
+        {
+          "name": "an existing todo with id=--MLqrG6LkLkkKc1iMLBt"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "4.0.10"
+    }
+  }
+}

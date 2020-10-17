@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  grafana:
+    image: grafana/grafana:7.3.2
+    volumes:
+      - ./provisioning/:/etc/grafana/provisioning/
+      - ./data:/var/lib/grafana
+    env_file:
+      - config/grafana.monitoring.env
+    ports:
+      - 3000:3000
+
+  prometheus:
+    image: prom/prometheus:v2.22.1
+    volumes:
+      - ./config:/prometheus
+      - ./data/prometheus:/data
+    command:
+      - '--config.file=/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/data'
+    ports:
+      - 9090:9090
+
+  pushgateway:
+    image: prom/pushgateway:v1.3.0
+    ports:
+      - 9091:9091

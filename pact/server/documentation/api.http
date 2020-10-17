@@ -1,0 +1,62 @@
+GET http://localhost:8080/info
+Accept: text/plain
+
+###
+GET http://localhost:8080/ping
+Accept: text/plain
+
+###
+GET http://localhost:8080/metrics
+Accept: text/plain
+
+###
+GET http://localhost:8080/todo/1
+Accept: application/json
+
+###
+POST http://localhost:8080/todo
+Accept: application/json
+Content-Type: application/json
+
+{
+  "foobar": 1
+}
+
+###
+POST http://localhost:8080/todo
+Accept: application/json
+Content-Type: application/json
+
+{
+  "category": "shopping",
+  "text": "Don't forget the milk",
+  "status": "TODO",
+  "tags": [
+    "groceries",
+    "food"
+  ]
+}
+
+###
+GET http://localhost:8080/todo/-MLisUCmJDDlkcxUXmRV
+Accept: application/json
+
+###
+PUT http://localhost:8080/todo/-MLivp1BrS59mMbSN7Jq
+Accept: application/json
+Content-Type: application/json
+
+{
+  "rev": "-MLivp1BrS59mMbSN7Jr",
+  "text": "Don't forget the milk",
+  "status": "TODO",
+  "category": "shopping",
+  "tags": [
+    "groceries",
+    "food"
+  ]
+}
+
+###
+DELETE http://localhost:8080/todo/-MLx1s8kTDwES1PpYe5I
+Accept: application/json

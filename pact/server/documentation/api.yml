@@ -1,0 +1,132 @@
+openapi: 3.0.0
+
+info:
+  title: Todo API
+  description: An API for creating and managing tasks
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: DEV (local)
+
+paths:
+  /info:
+    get:
+      summary: Returns information about this API
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfoResponse'
+              example:
+                version: "80fce9d-20201115"
+
+  /todo:
+    post:
+      summary: Create a new task
+      description: >
+        Creates a new persistent task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTodoRequest'
+            example:
+              category: shopping
+              text: Don't forget the milk
+              status: TODO
+              tags:
+                - groceries
+                - food
+      responses:
+        '200':
+          description: Successfully created task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+              example:
+                id: -MMJam1XPAFVTTajrZYB
+                rev: -MMJam1XPAFVTTajrZYC
+                category: shopping
+                text: Don't forget the milk
+                status: TODO
+                tags:
+                  - groceries
+                  - food
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+              example:
+                message: Validation failed
+                details:
+                  - "Key: 'CreateTodoRequest.Tags' Error:Field validation for 'Tags' failed on the 'required' tag"
+
+components:
+  schemas:
+    InfoResponse:
+      type: object
+      properties:
+        version:
+          type: string
+          required: true
+
+    CreateTodoRequest:
+      type: object
+      properties:
+        category:
+          required: true
+          type: string
+        text:
+          required: true
+          type: string
+        status:
+          required: true
+          type: string
+        tags:
+          required: true
+          type: array
+          items:
+            type: string
+
+    Todo:
+      type: object
+      properties:
+        id:
+          required: true
+          type: string
+        rev:
+          required: true
+          type: string
+        category:
+          required: true
+          type: string
+        text:
+          required: true
+          type: string
+        status:
+          required: true
+          type: string
+        tags:
+          required: true
+          type: array
+          items:
+            type: string
+
+    BadRequestResponse:
+      type: object
+      properties:
+        message:
+          required: true
+          type: string
+        details:
+          required: true
+          type: array
+          items:
+            type: string

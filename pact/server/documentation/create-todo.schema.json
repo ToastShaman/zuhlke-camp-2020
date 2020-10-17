@@ -1,0 +1,24 @@
+{
+    "$id": "https://github.com/ToastShaman/zuhlke-camp-2020/create-todo.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "description": "A representation of a Todo item",
+    "type": "object",
+    "properties": {
+        "category": {
+            "type": "string"
+        },
+        "text": {
+            "type": "string"
+        },
+        "status": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "required": ["category", "text", "status", "tags"]
+}
