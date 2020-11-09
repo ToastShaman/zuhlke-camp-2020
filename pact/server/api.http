@@ -1,0 +1,52 @@
+GET http://localhost:3000/ping
+Accept: text/plain
+
+###
+GET http://localhost:3000/todo/1
+Accept: application/json
+
+###
+POST http://localhost:3000/todo
+Accept: application/json
+Content-Type: application/json
+
+{
+  "foobar": 1
+}
+
+###
+POST http://localhost:3000/todo
+Accept: application/json
+Content-Type: application/json
+
+{
+  "category": "shopping",
+  "text": "Don't forget the milk",
+  "status": "TODO",
+  "tags": [
+    "groceries",
+    "food"
+  ]
+}
+
+###
+GET http://localhost:3000/todo/-MLisUCmJDDlkcxUXmRV
+Accept: application/json
+
+###
+PUT http://localhost:3000/todo/-MLivp1BrS59mMbSN7Jq
+Accept: application/json
+Content-Type: application/json
+
+{
+  "rev": "-MLivp1BrS59mMbSN7Jr",
+  "text": "Don't forget the milk",
+  "status": "TODO",
+  "category": "shopping",
+  "tags": [
+    "groceries",
+    "food"
+  ]
+}
+
+
