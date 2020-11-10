@@ -1,4 +1,4 @@
-module petstore.com/v1
+module zuhlke.com/todo/v1
 
 go 1.15
 
