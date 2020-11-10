@@ -2,10 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/kjk/betterguid"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"net/http"
 	"sync"
@@ -22,13 +25,17 @@ type (
 	}
 )
 
-func (t Todo) NewId() Todo {
-	t.Id = betterguid.New()
+func NewId() string {
+	return betterguid.New()
+}
+
+func (t Todo) WithNewId(id string) Todo {
+	t.Id = id
 	return t
 }
 
-func (t Todo) NewRevision() Todo {
-	t.Revision = betterguid.New()
+func (t Todo) WithNewRevision(id string) Todo {
+	t.Revision = id
 	return t
 }
 
@@ -56,7 +63,7 @@ type (
 var (
 	todoNotFoundError     = &TodoNotFoundError{message: "Todo not found"}
 	revisionMismatchError = &RevisionMismatchError{message: "Revision mismatch"}
-	emptyTodo             = &Todo{}
+	emptyTodo             = new(Todo)
 )
 
 func (e *TodoNotFoundError) Error() string {
@@ -94,20 +101,18 @@ func (r *InMemoryTodoRepository) Update(todo Todo) (Todo, error) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	t, ok := r.todoById[todo.Id]
+	found, ok := r.todoById[todo.Id]
 	if !ok {
 		return *emptyTodo, todoNotFoundError
 	}
 
-	if t.Revision != todo.Revision {
+	if found.Revision != todo.Revision {
 		return *emptyTodo, revisionMismatchError
 	}
 
-	todoWithNewRevision := todo.NewRevision()
+	r.todoById[todo.Id] = todo.WithNewRevision(NewId())
 
-	r.todoById[todo.Id] = todoWithNewRevision
-
-	return todoWithNewRevision, nil
+	return r.todoById[todo.Id], nil
 }
 
 type (
@@ -132,10 +137,10 @@ type (
 	}
 )
 
-func (r *CreateTodoRequest) NewTodo() Todo {
+func (r *CreateTodoRequest) AsNewTodo() Todo {
 	return Todo{
-		Id:       betterguid.New(),
-		Revision: betterguid.New(),
+		Id:       NewId(),
+		Revision: NewId(),
 		Text:     r.Text,
 		Status:   r.Status,
 		Category: r.Category,
@@ -143,7 +148,7 @@ func (r *CreateTodoRequest) NewTodo() Todo {
 	}
 }
 
-func (r *UpdateTodoRequest) NewTodo(id string) Todo {
+func (r *UpdateTodoRequest) AsNewTodo(id string) Todo {
 	return Todo{
 		Id:       id,
 		Revision: r.Revision,
@@ -172,11 +177,68 @@ func NewApiError(err error) *ApiError {
 	return &ApiError{Message: err.Error()}
 }
 
+var (
+	inFlightGauge = prometheus.NewGauge(prometheus.GaugeOpts{
+		Name: "in_flight_requests",
+		Help: "A gauge of requests currently being served by the wrapped handler.",
+	})
+
+	counter = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "api_requests_total",
+			Help: "A counter for requests to the wrapped handler.",
+		},
+		[]string{"code", "method"},
+	)
+
+	histVec = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:        "response_duration_seconds",
+			Help:        "A histogram of request latencies.",
+			Buckets:     prometheus.DefBuckets,
+			ConstLabels: prometheus.Labels{"handler": "api"},
+		},
+		[]string{"method"},
+	)
+
+	writeHeaderVec = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:        "write_header_duration_seconds",
+			Help:        "A histogram of time to first write latencies.",
+			Buckets:     prometheus.DefBuckets,
+			ConstLabels: prometheus.Labels{"handler": "api"},
+		},
+		[]string{},
+	)
+
+	responseSize = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "push_request_size_bytes",
+			Help:    "A histogram of request sizes for requests.",
+			Buckets: []float64{200, 500, 900, 1500},
+		},
+		[]string{},
+	)
+)
+
 func NewTodoAPI(repository TodoRepository) *chi.Mux {
 	validate := validator.New()
 
 	r := chi.NewRouter()
 
+	prometheus.MustRegister(inFlightGauge, counter, histVec, writeHeaderVec, responseSize)
+
+	r.Use(func(handler http.Handler) http.Handler {
+		return promhttp.InstrumentHandlerInFlight(inFlightGauge,
+			promhttp.InstrumentHandlerCounter(counter,
+				promhttp.InstrumentHandlerDuration(histVec,
+					promhttp.InstrumentHandlerTimeToWriteHeader(writeHeaderVec,
+						promhttp.InstrumentHandlerResponseSize(responseSize, handler),
+					),
+				),
+			),
+		)
+	})
 	r.Use(middleware.RequestID)
 	r.Use(middleware.NoCache)
 	r.Use(middleware.RealIP)
@@ -191,6 +253,9 @@ func NewTodoAPI(repository TodoRepository) *chi.Mux {
 		})
 	})
 
+	r.Get("/info", Info())
+	r.Handle("/metrics", promhttp.Handler())
+
 	r.Route("/todo", func(r chi.Router) {
 		r.Post("/", CreateTodo(repository, validate))
 		r.Put("/{id}", UpdateTodoById(repository, validate))
@@ -198,6 +263,15 @@ func NewTodoAPI(repository TodoRepository) *chi.Mux {
 	})
 
 	return r
+}
+
+func Info() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		type Info struct {
+			Version string `json:"version"`
+		}
+		respondWith(http.StatusOK, &Info{Version: version}, w)
+	}
 }
 
 func CreateTodo(rep TodoRepository, validate *validator.Validate) func(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +290,7 @@ func CreateTodo(rep TodoRepository, validate *validator.Validate) func(w http.Re
 			return
 		}
 
-		todo := request.NewTodo()
+		todo := request.AsNewTodo()
 
 		rep.Persist(todo)
 
@@ -256,7 +330,7 @@ func UpdateTodoById(rep TodoRepository, validate *validator.Validate) func(w htt
 			return
 		}
 
-		todo, err := rep.Update(request.NewTodo(id))
+		todo, err := rep.Update(request.AsNewTodo(id))
 		if err != nil {
 			switch err.(type) {
 			case *TodoNotFoundError:
@@ -283,10 +357,18 @@ func respondWith(status int, body interface{}, w http.ResponseWriter) {
 	}
 }
 
+var (
+	version = "dev"
+	addr    = flag.String("listen-address", ":3000", "The address to listen on for HTTP requests.")
+)
+
 func main() {
+	flag.Parse()
+
 	repository := NewInMemoryTodoRepository()
 	mux := NewTodoAPI(repository)
-	err := http.ListenAndServe(":3000", mux)
+
+	err := http.ListenAndServe(*addr, mux)
 	if err != nil {
 		log.Fatal(err)
 	}

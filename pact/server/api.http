@@ -1,4 +1,12 @@
+GET http://localhost:3000/info
+Accept: text/plain
+
+###
 GET http://localhost:3000/ping
+Accept: text/plain
+
+###
+GET http://localhost:3000/metrics
 Accept: text/plain
 
 ###
