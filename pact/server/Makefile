@@ -1,3 +1,4 @@
+DIR := ${CURDIR}
 COMMIT := $(shell git rev-parse --short HEAD)
 DATE := $(shell git log -1 --format=%cd --date=format:"%Y%m%d")
 VERSION := $(COMMIT)-$(DATE)
@@ -15,3 +16,8 @@ clean:
 .PHONY: run
 run:
 	go run $(FLAGS) main.go
+
+.PHONY: newman
+newman:
+	docker run --rm -it --network="host" -v $(DIR)/documentation/postman:/etc/newman -t postman/newman \
+		run todo_api.postman_collection.json --environment="docker.postman_environment.json"

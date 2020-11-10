@@ -1,0 +1,305 @@
+{
+	"info": {
+		"_postman_id": "85a56635-cb99-4f6e-9ba5-49fd52f5fc60",
+		"name": "Todo API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cc7f958f-5bf4-4cb1-b349-941c14931226",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/info",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/ping",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "61b22ed1-3276-4793-9bc3-1614e16782d8",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/plain",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/ping",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/metrics",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5f09a6c2-1f37-4722-be5b-384554fe60b1",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "text/plain"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/metrics",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"metrics"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Todo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b3446ed8-98de-432c-865d-c67bd9fdccd0",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+							"    var json = JSON.parse(responseBody);",
+							"    postman.setEnvironmentVariable(\"todo_id\", json.id);",
+							"    postman.setEnvironmentVariable(\"todo_rev\", json.rev);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"category\": \"shopping\",\n  \"text\": \"Don't forget the milk\",\n  \"status\": \"TODO\",\n  \"tags\": [\n    \"groceries\",\n    \"food\"\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/todo",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"todo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Todo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6f6998f5-8371-4c06-bc2d-b606acf46b1c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var json = JSON.parse(responseBody);",
+							"    postman.setEnvironmentVariable(\"todo_id\", json.id);",
+							"    postman.setEnvironmentVariable(\"todo_rev\", json.rev);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"rev\": \"{{todo_rev}}\",\n    \"text\": \"Don't forget the milk\",\n    \"status\": \"TODO\",\n    \"category\": \"shopping\",\n    \"tags\": [\n        \"groceries\",\n        \"food\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/todo/{{todo_id}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"todo",
+						"{{todo_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Todo: Revision mismatch",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e6499c19-35c9-4875-9455-c49be088109f",
+						"exec": [
+							"pm.test(\"Status code is 409\", function () {",
+							"    pm.response.to.have.status(409);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"rev\": \"foobar\",\n    \"text\": \"Don't forget the milk\",\n    \"status\": \"TODO\",\n    \"category\": \"shopping\",\n    \"tags\": [\n        \"groceries\",\n        \"food\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/todo/{{todo_id}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"todo",
+						"{{todo_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Todo Not Found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1c98028c-c801-4ce5-b9eb-ec84e4ad60a0",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/todo/foobar",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"todo",
+						"foobar"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
