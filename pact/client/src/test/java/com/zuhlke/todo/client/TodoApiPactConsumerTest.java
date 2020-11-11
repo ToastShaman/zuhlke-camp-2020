@@ -1,6 +1,7 @@
 package com.zuhlke.todo.client;
 
 import au.com.dius.pact.consumer.MockServer;
+import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
@@ -17,7 +18,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 //@formatter:off
 @ExtendWith(PactConsumerTestExt.class)
-@PactTestFor(providerName = "TodoApi", port = "1234")
+@PactTestFor(providerName = "todo_api", port = "1234")
 public class TodoApiPactConsumerTest {
 
     @BeforeEach
@@ -25,7 +26,7 @@ public class TodoApiPactConsumerTest {
         assertThat(mockServer).isNotNull();
     }
 
-    @Pact(consumer = "TodoClient")
+    @Pact(consumer = "jvm_todo_client")
     public RequestResponsePact createTodo(PactDslWithProvider builder) {
         return builder
                 .given("An empty repository")
@@ -46,19 +47,14 @@ public class TodoApiPactConsumerTest {
                     .matchHeader("Content-Type", "application/json", "application/json")
                 .willRespondWith()
                     .status(201)
-                    .body("""
-                            {
-                                "id": "-MLqrG6LkLkkKc1iMLBt",
-                                "rev": "-MLivp1BrS59mMbSN7Jr",
-                                "text": "Don't forget the milk",
-                                "status": "TODO",
-                                "category": "shopping",
-                                "tags": [
-                                    "groceries",
-                                    "food"
-                                ]
-                            }
-                            """)
+                    .body(new PactDslJsonBody()
+                            .stringMatcher("id", "[-a-zA-Z0-9_]{20}", "-MLqrG6LkLkkKc1iMLBt")
+                            .stringMatcher("rev", "[-a-zA-Z0-9_]{20}", "-MLivp1BrS59mMbSN7Jr")
+                            .stringValue("text", "Don't forget the milk")
+                            .stringValue("status", "TODO")
+                            .stringValue("category", "shopping")
+                            .array("tags").includesStr("groceries").includesStr("food").closeArray())
+                    .matchHeader("Content-Type", "application/json", "application/json")
                 .toPact();
     }
 
@@ -66,7 +62,7 @@ public class TodoApiPactConsumerTest {
     @PactTestFor(pactMethod = "createTodo")
     void testCreateTodo(MockServer mockServer)  {
         HttpTodoClient todoClient = TodoClient.builder()
-                .setHost("http://localhost:%d".formatted(1234))
+                .setHost(mockServer.getUrl())
                 .build();
 
         CreateTodoRequest createTodoRequest = CreateTodoRequest.builder()

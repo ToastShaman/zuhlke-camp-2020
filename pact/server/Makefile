@@ -4,6 +4,10 @@ DATE := $(shell git log -1 --format=%cd --date=format:"%Y%m%d")
 VERSION := $(COMMIT)-$(DATE)
 FLAGS := -ldflags "-X main.version=$(VERSION)"
 
+.PHONY: test
+test:
+	go test -v
+
 .PHONY: build
 build: clean
 	env GOOS=darwin GOARCH=amd64 go build $(FLAGS) -o build/todo-server-${VERSION}-darwin-amd64

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-playground/validator/v10"
@@ -44,6 +45,7 @@ type (
 		FindTodoById(id string) (Todo, bool)
 		Persist(todo Todo)
 		Update(todo Todo) (Todo, error)
+		Prune()
 	}
 
 	InMemoryTodoRepository struct {
@@ -75,7 +77,7 @@ func (e *RevisionMismatchError) Error() string {
 }
 
 func NewInMemoryTodoRepository() TodoRepository {
-	return &InMemoryTodoRepository{todoById: map[string]Todo{}}
+	return &InMemoryTodoRepository{todoById: make(map[string]Todo)}
 }
 
 func (r *InMemoryTodoRepository) FindTodoById(id string) (Todo, bool) {
@@ -113,6 +115,13 @@ func (r *InMemoryTodoRepository) Update(todo Todo) (Todo, error) {
 	r.todoById[todo.Id] = todo.WithNewRevision(NewId())
 
 	return r.todoById[todo.Id], nil
+}
+
+func (r *InMemoryTodoRepository) Prune() {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+
+	r.todoById = make(map[string]Todo)
 }
 
 type (
@@ -359,7 +368,7 @@ func respondWith(status int, body interface{}, w http.ResponseWriter) {
 
 var (
 	version = "dev"
-	addr    = flag.String("listen-address", ":3000", "The address to listen on for HTTP requests.")
+	addr    = flag.String("listen-address", "localhost:3000", "The address to listen on for HTTP requests.")
 )
 
 func main() {
@@ -368,8 +377,6 @@ func main() {
 	repository := NewInMemoryTodoRepository()
 	mux := NewTodoAPI(repository)
 
-	err := http.ListenAndServe(*addr, mux)
-	if err != nil {
-		log.Fatal(err)
-	}
+	fmt.Printf("Server listening on %s\n", *addr)
+	log.Fatal(http.ListenAndServe(*addr, mux))
 }
