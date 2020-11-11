@@ -1,7 +1,5 @@
 package com.zuhlke.todo.client;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -27,6 +25,14 @@ public class Todo {
         this.status = status;
         this.category = category;
         this.tags = List.copyOf(tags);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getRev() {
+        return rev;
     }
 
     public String getText() {
@@ -77,5 +83,13 @@ public class Todo {
 
     public static TodoBuilder builder() {
         return TodoBuilder.aTodo();
+    }
+
+    public static TodoBuilder newBuilder(Todo todo) {
+        return TodoBuilder.aTodo(todo);
+    }
+
+    public TodoBuilder newBuilder() {
+        return TodoBuilder.aTodo(this);
     }
 }

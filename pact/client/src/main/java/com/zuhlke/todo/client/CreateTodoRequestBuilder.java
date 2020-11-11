@@ -15,14 +15,6 @@ public final class CreateTodoRequestBuilder {
         return new CreateTodoRequestBuilder();
     }
 
-    public CreateTodoRequestBuilder copy(CreateTodoRequest createTodoRequest) {
-        this.text = createTodoRequest.getText();
-        this.category = createTodoRequest.getCategory();
-        this.status = createTodoRequest.getStatus();
-        this.tags = List.copyOf(tags);
-        return this;
-    }
-
     public CreateTodoRequestBuilder withText(String text) {
         this.text = text;
         return this;
@@ -41,10 +33,6 @@ public final class CreateTodoRequestBuilder {
     public CreateTodoRequestBuilder withTags(List<String> tags) {
         this.tags = tags;
         return this;
-    }
-
-    public CreateTodoRequestBuilder but() {
-        return aTodo().withText(text).withStatus(status).withCategory(category).withTags(tags);
     }
 
     public CreateTodoRequest build() {

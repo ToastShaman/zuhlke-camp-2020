@@ -7,6 +7,112 @@
   },
   "interactions": [
     {
+      "description": "an update",
+      "request": {
+        "method": "PUT",
+        "path": "/todo/-MLqrG6LkLkkKc1iMLBt",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "rev": "-MLivp1BrS59mMbSN7Jr",
+          "status": "DONE",
+          "text": "Don't forget the milk",
+          "category": "shopping",
+          "tags": [
+            "groceries",
+            "food"
+          ]
+        },
+        "matchingRules": {
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "rev": "-MLsGmqxq0uATxV5FiTl",
+          "id": "-MLqrG6LkLkkKc1iMLBt",
+          "text": "Don't forget the milk",
+          "category": "shopping",
+          "status": "DONE",
+          "tags": [
+            "groceries",
+            "food"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.id": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[-a-zA-Z0-9_]{20}"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.rev": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[-a-zA-Z0-9_]{20}"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.tags[0]": {
+              "matchers": [
+                {
+                  "match": "include",
+                  "value": "groceries"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.tags[1]": {
+              "matchers": [
+                {
+                  "match": "include",
+                  "value": "food"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        }
+      },
+      "providerStates": [
+        {
+          "name": "a todo with id=-MLqrG6LkLkkKc1iMLBt and rev=-MLivp1BrS59mMbSN7Jr"
+        }
+      ]
+    },
+    {
       "description": "a new todo",
       "request": {
         "method": "POST",
@@ -15,8 +121,8 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "text": "Don't forget the milk",
           "status": "TODO",
+          "text": "Don't forget the milk",
           "category": "shopping",
           "tags": [
             "groceries",
@@ -107,7 +213,7 @@
       },
       "providerStates": [
         {
-          "name": "An empty repository"
+          "name": "an empty repository"
         }
       ]
     }

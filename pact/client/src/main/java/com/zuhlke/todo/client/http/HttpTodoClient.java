@@ -13,8 +13,10 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 
+import static com.damnhandy.uri.template.UriTemplateBuilder.var;
 import static java.net.http.HttpRequest.BodyPublishers.ofByteArray;
 
+@SuppressWarnings("DuplicatedCode")
 public class HttpTodoClient implements TodoClient {
 
     private final String host;
@@ -56,6 +58,41 @@ public class HttpTodoClient implements TodoClient {
             Todo todo = mapper.readValue(response.body(), Todo.class);
 
             return new CreateTodoResponse(todo);
+
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            throw new TodoClientException(e);
+        }
+    }
+
+    @Override
+    public UpdateTodoResponse update(UpdateTodoRequest updateTodoRequest) {
+        try {
+            String uri = UriTemplate.buildFromTemplate(host)
+                    .literal("/todo")
+                    .path(var("id"))
+                    .build()
+                    .set("id", updateTodoRequest.getId())
+                    .expand();
+
+            byte[] payload = mapper.writeValueAsBytes(updateTodoRequest);
+
+            HttpRequest request = HttpRequest.newBuilder(new URI(uri))
+                    .header("Accept", "application/json")
+                    .header("Content-Type", "application/json")
+                    .PUT(ofByteArray(payload))
+                    .timeout(timeout)
+                    .build();
+
+            HttpResponse<byte[]> response = client.send(request, BodyHandlers.ofByteArray());
+
+            if (response.statusCode() != 200 && response.statusCode() != 201) {
+                TodoApiError error = mapper.readValue(response.body(), TodoApiError.class);
+                throw new TodoClientException(response.statusCode(), error);
+            }
+
+            Todo todo = mapper.readValue(response.body(), Todo.class);
+
+            return new UpdateTodoResponse(todo);
 
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new TodoClientException(e);

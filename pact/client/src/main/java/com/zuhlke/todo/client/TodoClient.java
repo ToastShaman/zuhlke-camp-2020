@@ -8,4 +8,6 @@ public interface TodoClient {
     }
 
     CreateTodoResponse create(CreateTodoRequest createTodoRequest);
+
+    UpdateTodoResponse update(UpdateTodoRequest updateTodoRequest);
 }

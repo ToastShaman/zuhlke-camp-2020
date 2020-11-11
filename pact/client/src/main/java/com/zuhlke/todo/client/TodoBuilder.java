@@ -17,6 +17,16 @@ public final class TodoBuilder {
         return new TodoBuilder();
     }
 
+    public static TodoBuilder aTodo(Todo todo) {
+        return new TodoBuilder()
+                .withId(todo.getId())
+                .withRev(todo.getRev())
+                .withStatus(todo.getStatus())
+                .withCategory(todo.getCategory())
+                .withTags(todo.getTags())
+                .withText(todo.getText());
+    }
+
     public TodoBuilder withId(String id) {
         this.id = id;
         return this;
@@ -45,10 +55,6 @@ public final class TodoBuilder {
     public TodoBuilder withTags(List<String> tags) {
         this.tags = tags;
         return this;
-    }
-
-    public TodoBuilder but() {
-        return aTodo().withId(id).withRev(rev).withText(text).withStatus(status).withCategory(category).withTags(tags);
     }
 
     public Todo build() {
