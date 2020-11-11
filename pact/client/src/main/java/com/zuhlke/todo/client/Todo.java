@@ -1,5 +1,7 @@
 package com.zuhlke.todo.client;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
