@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "85a56635-cb99-4f6e-9ba5-49fd52f5fc60",
+		"_postman_id": "8107e18b-ed1f-4a1f-b224-92f1b04c3753",
 		"name": "Todo API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,7 +11,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "cc7f958f-5bf4-4cb1-b349-941c14931226",
+						"id": "ecc9e2df-b209-479a-90cf-04408d71f6a7",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -106,7 +106,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "61b22ed1-3276-4793-9bc3-1614e16782d8",
+						"id": "53962ae1-27f3-4083-8c8d-e2d4ca0e8344",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -201,7 +201,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "5f09a6c2-1f37-4722-be5b-384554fe60b1",
+						"id": "14004463-db5b-4465-9bc1-cbefb6e0ecf1",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -300,7 +300,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "b3446ed8-98de-432c-865d-c67bd9fdccd0",
+						"id": "2cc1d389-b16e-4488-8b23-8d7b98fce91c",
 						"exec": [
 							"pm.test(\"Successful POST request\", function () {",
 							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
@@ -416,7 +416,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "6f6998f5-8371-4c06-bc2d-b606acf46b1c",
+						"id": "1161e2d5-282d-4087-98fd-4cf77bd3f5e6",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -534,7 +534,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "e6499c19-35c9-4875-9455-c49be088109f",
+						"id": "c97a9ecf-f4d8-4a92-9215-0c929b990a22",
 						"exec": [
 							"pm.test(\"Status code is 409\", function () {",
 							"    pm.response.to.have.status(409);",
@@ -644,12 +644,118 @@
 			]
 		},
 		{
+			"name": "Delete Todo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9ffb4697-3ea3-4955-ba8d-7aeb66967508",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/todo/{{todo_id}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"todo",
+						"{{todo_id}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Update Todo",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rev\": \"{{todo_rev}}\",\n    \"text\": \"Don't forget the milk\",\n    \"status\": \"TODO\",\n    \"category\": \"shopping\",\n    \"tags\": [\n        \"groceries\",\n        \"food\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/todo/{{todo_id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"todo",
+								"{{todo_id}}"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, no-transform, must-revalidate, private, max-age=0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 01 Jan 1970 01:00:00 BST"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "X-Accel-Expires",
+							"value": "0"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 10 Nov 2020 15:53:59 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "156"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": \"-MLmrFgJRzkmMFAqjKaf\",\n    \"rev\": \"-MLmrHQmd7VjEoiXL_BY\",\n    \"text\": \"Don't forget the milk\",\n    \"status\": \"TODO\",\n    \"category\": \"shopping\",\n    \"tags\": [\n        \"groceries\",\n        \"food\"\n    ]\n}"
+				}
+			]
+		},
+		{
 			"name": "Todo Not Found",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "1c98028c-c801-4ce5-b9eb-ec84e4ad60a0",
+						"id": "0e032e83-fb86-4274-808d-303c6d68bf9b",
 						"exec": [
 							"pm.test(\"Status code is 404\", function () {",
 							"    pm.response.to.have.status(404);",

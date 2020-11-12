@@ -42,7 +42,8 @@ func (t Todo) WithNewRevision(id string) Todo {
 
 type (
 	TodoRepository interface {
-		FindTodoById(id string) (Todo, bool)
+		FindById(id string) (Todo, bool)
+		DeleteById(id string)
 		Persist(todo Todo)
 		Update(todo Todo) (Todo, error)
 		Prune()
@@ -80,7 +81,7 @@ func NewInMemoryTodoRepository() TodoRepository {
 	return &InMemoryTodoRepository{todoById: make(map[string]Todo)}
 }
 
-func (r *InMemoryTodoRepository) FindTodoById(id string) (Todo, bool) {
+func (r *InMemoryTodoRepository) FindById(id string) (Todo, bool) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -122,6 +123,13 @@ func (r *InMemoryTodoRepository) Prune() {
 	defer r.mutex.Unlock()
 
 	r.todoById = make(map[string]Todo)
+}
+
+func (r *InMemoryTodoRepository) DeleteById(id string) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+
+	delete(r.todoById, id)
 }
 
 type (
@@ -271,6 +279,7 @@ func NewTodoAPI(repository TodoRepository) *chi.Mux {
 		r.Post("/", CreateTodo(repository, validate))
 		r.Put("/{id}", UpdateTodoById(repository, validate))
 		r.Get("/{id}", GetTodoById(repository))
+		r.Delete("/{id}", DeleteTodoById(repository))
 	})
 
 	return r
@@ -313,7 +322,7 @@ func GetTodoById(rep TodoRepository) func(w http.ResponseWriter, r *http.Request
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
 
-		t, ok := rep.FindTodoById(id)
+		t, ok := rep.FindById(id)
 		if !ok {
 			respondWith(http.StatusNotFound, &ApiTodoNotFoundError, w)
 			return
@@ -357,6 +366,14 @@ func UpdateTodoById(rep TodoRepository, validate *validator.Validate) func(w htt
 		}
 
 		respondWith(http.StatusOK, &todo, w)
+	}
+}
+
+func DeleteTodoById(rep TodoRepository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		rep.DeleteById(id)
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 
