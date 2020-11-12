@@ -230,6 +230,18 @@ var (
 	)
 )
 
+func Instrument(next http.Handler) http.Handler {
+	return promhttp.InstrumentHandlerInFlight(inFlightGauge,
+		promhttp.InstrumentHandlerCounter(counter,
+			promhttp.InstrumentHandlerDuration(histVec,
+				promhttp.InstrumentHandlerTimeToWriteHeader(writeHeaderVec,
+					promhttp.InstrumentHandlerResponseSize(responseSize, next),
+				),
+			),
+		),
+	)
+}
+
 func NewTodoAPI(repository TodoRepository) *chi.Mux {
 	validate := validator.New()
 
@@ -237,17 +249,7 @@ func NewTodoAPI(repository TodoRepository) *chi.Mux {
 
 	prometheus.MustRegister(inFlightGauge, counter, histVec, writeHeaderVec, responseSize)
 
-	r.Use(func(handler http.Handler) http.Handler {
-		return promhttp.InstrumentHandlerInFlight(inFlightGauge,
-			promhttp.InstrumentHandlerCounter(counter,
-				promhttp.InstrumentHandlerDuration(histVec,
-					promhttp.InstrumentHandlerTimeToWriteHeader(writeHeaderVec,
-						promhttp.InstrumentHandlerResponseSize(responseSize, handler),
-					),
-				),
-			),
-		)
-	})
+	r.Use(Instrument)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.NoCache)
 	r.Use(middleware.RealIP)
