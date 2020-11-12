@@ -651,8 +651,8 @@
 					"script": {
 						"id": "9ffb4697-3ea3-4955-ba8d-7aeb66967508",
 						"exec": [
-							"pm.test(\"Status code is 204\", function () {",
-							"    pm.response.to.have.status(204);",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -746,6 +746,64 @@
 					],
 					"cookie": [],
 					"body": "{\n    \"id\": \"-MLmrFgJRzkmMFAqjKaf\",\n    \"rev\": \"-MLmrHQmd7VjEoiXL_BY\",\n    \"text\": \"Don't forget the milk\",\n    \"status\": \"TODO\",\n    \"category\": \"shopping\",\n    \"tags\": [\n        \"groceries\",\n        \"food\"\n    ]\n}"
+				},
+				{
+					"name": "Delete Todo",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/todo/{{todo_id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"todo",
+								"{{todo_id}}"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, no-transform, must-revalidate, private, max-age=0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 01 Jan 1970 01:00:00 BST"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "X-Accel-Expires",
+							"value": "0"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 12 Nov 2020 15:22:41 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "156"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": \"-MLx2HYsqTzMZw8HdWkD\",\n    \"rev\": \"-MLx2HYsqTzMZw8HdWkE\",\n    \"text\": \"Don't forget the milk\",\n    \"status\": \"TODO\",\n    \"category\": \"shopping\",\n    \"tags\": [\n        \"groceries\",\n        \"food\"\n    ]\n}"
 				}
 			]
 		},

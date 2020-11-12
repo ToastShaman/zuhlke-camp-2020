@@ -25,3 +25,7 @@ run:
 newman:
 	docker run --rm -it --network="host" -v $(DIR)/documentation/postman:/etc/newman -t postman/newman \
 		run todo_api.postman_collection.json --environment="docker.postman_environment.json"
+
+.PHONY: perf
+perf:
+	docker run --rm -i loadimpact/k6 run -e MY_HOSTNAME=host.docker.internal:3000 - <perf/script.js

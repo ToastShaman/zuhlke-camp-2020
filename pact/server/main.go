@@ -372,8 +372,16 @@ func UpdateTodoById(rep TodoRepository, validate *validator.Validate) func(w htt
 func DeleteTodoById(rep TodoRepository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
+
+		t, ok := rep.FindById(id)
+		if !ok {
+			respondWith(http.StatusNotFound, &ApiTodoNotFoundError, w)
+			return
+		}
+
 		rep.DeleteById(id)
-		w.WriteHeader(http.StatusNoContent)
+
+		respondWith(http.StatusOK, &t, w)
 	}
 }
 
