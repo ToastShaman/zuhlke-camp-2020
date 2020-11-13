@@ -411,6 +411,111 @@
 			]
 		},
 		{
+			"name": "Get Todo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "45c3248e-4c0a-4b19-8574-c5eabec62e1c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/todo/{{todo_id}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"todo",
+						"{{todo_id}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Create Todo",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"category\": \"shopping\",\n  \"text\": \"Don't forget the milk\",\n  \"status\": \"TODO\",\n  \"tags\": [\n    \"groceries\",\n    \"food\"\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/todo",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"todo"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, no-transform, must-revalidate, private, max-age=0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 01 Jan 1970 01:00:00 BST"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "X-Accel-Expires",
+							"value": "0"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 10 Nov 2020 15:53:52 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "156"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": \"-MLmrFgJRzkmMFAqjKaf\",\n    \"rev\": \"-MLmrFgJRzkmMFAqjKag\",\n    \"text\": \"Don't forget the milk\",\n    \"status\": \"TODO\",\n    \"category\": \"shopping\",\n    \"tags\": [\n        \"groceries\",\n        \"food\"\n    ]\n}"
+				}
+			]
+		},
+		{
 			"name": "Update Todo",
 			"event": [
 				{
