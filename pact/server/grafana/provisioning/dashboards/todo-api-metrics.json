@@ -82,9 +82,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(response_duration_seconds_bucket{job=\"todo\", le=\"1\"}[$interval])",
+          "expr": "sum(rate(response_duration_seconds_count{job=\"todo\"}[$interval]))",
           "interval": "",
-          "legendFormat": "{{method}}",
+          "legendFormat": "Requests",
           "queryType": "randomWalk",
           "refId": "A"
         }
@@ -93,7 +93,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Req/s",
+      "title": "Req/interval",
       "tooltip": {
         "shared": true,
         "sort": 0,
