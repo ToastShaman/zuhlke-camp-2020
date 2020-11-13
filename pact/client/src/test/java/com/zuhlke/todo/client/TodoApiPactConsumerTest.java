@@ -8,6 +8,7 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import com.zuhlke.todo.client.http.HttpTodoClient;
+import com.zuhlke.todo.client.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,14 +70,14 @@ public class TodoApiPactConsumerTest {
                 .setHost(mockServer.getUrl())
                 .build();
 
-        CreateTodoRequest createTodoRequest = CreateTodoRequest.builder()
+        CreateTodoRequest request = CreateTodoRequest.builder()
                 .withText("Don't forget the milk")
                 .withStatus("TODO")
                 .withCategory("shopping")
                 .withTags(List.of("groceries", "food"))
                 .build();
 
-        CreateTodoResponse response = todoClient.create(createTodoRequest);
+        CreateTodoResponse response = todoClient.create(request);
 
         Todo actual = response.getTodo();
 
@@ -121,7 +122,7 @@ public class TodoApiPactConsumerTest {
 
     @Test
     @PactTestFor(pactMethod = "updateTodo")
-    void tesUpdateTodo(MockServer mockServer)  {
+    void testUpdateTodo(MockServer mockServer)  {
         HttpTodoClient todoClient = TodoClient.builder()
                 .setHost(mockServer.getUrl())
                 .build();
@@ -135,14 +136,62 @@ public class TodoApiPactConsumerTest {
                 .withTags(List.of("groceries", "food"))
                 .build();
 
-        UpdateTodoRequest updateTodoRequest = UpdateTodoRequest.builder(existing)
+        UpdateTodoRequest request = UpdateTodoRequest.builder(existing)
                 .withText("Don't forget the milk")
                 .withStatus("DONE")
                 .withCategory("shopping")
                 .withTags(List.of("groceries", "food"))
                 .build();
 
-        UpdateTodoResponse response = todoClient.update(updateTodoRequest);
+        UpdateTodoResponse response = todoClient.update(request);
+
+        Todo actual = response.getTodo();
+
+        assertThat(actual).hasNoNullFieldsOrProperties();
+    }
+
+    @Pact(consumer = "jvm_todo_client")
+    public RequestResponsePact deleteTodo(PactDslWithProvider builder) {
+        return builder
+                .given("an existing todo with id=--MLqrG6LkLkkKc1iMLBt")
+                .uponReceiving("a deletion")
+                .method("DELETE")
+                .path("/todo/-MLqrG6LkLkkKc1iMLBt")
+                .willRespondWith()
+                .status(200)
+                .body(new PactDslJsonBody()
+                        .stringType("id")
+                        .stringType("rev")
+                        .stringType("text")
+                        .stringType("status")
+                        .stringType("category")
+                        .array("tags")
+                        .stringType()
+                        .stringType()
+                        .closeArray())
+                .matchHeader("Content-Type", "application/json", "application/json")
+                .toPact();
+    }
+
+    @Test
+    @PactTestFor(pactMethod = "deleteTodo")
+    void testDeleteTodo(MockServer mockServer)  {
+        HttpTodoClient todoClient = TodoClient.builder()
+                .setHost(mockServer.getUrl())
+                .build();
+
+        Todo existing = Todo.builder()
+                .withId("-MLqrG6LkLkkKc1iMLBt")
+                .withRev("-MLivp1BrS59mMbSN7Jr")
+                .withText("Don't forget the milk")
+                .withStatus("TODO")
+                .withCategory("shopping")
+                .withTags(List.of("groceries", "food"))
+                .build();
+
+        DeleteTodoRequest request = DeleteTodoRequest.builder(existing).build();
+
+        DeleteTodoResponse response = todoClient.delete(request);
 
         Todo actual = response.getTodo();
 

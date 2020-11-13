@@ -1,4 +1,4 @@
-package com.zuhlke.todo.client;
+package com.zuhlke.todo.client.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -60,6 +60,6 @@ public class UpdateTodoRequest {
     }
 
     public static UpdateTodoRequestBuilder builder(Todo todo) {
-        return UpdateTodoRequestBuilder.aUpdateTodoRequestBuilder(todo);
+        return UpdateTodoRequestBuilder.builder(todo);
     }
 }

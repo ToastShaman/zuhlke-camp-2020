@@ -1,4 +1,4 @@
-package com.zuhlke.todo.client;
+package com.zuhlke.todo.client.model;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public final class CreateTodoRequestBuilder {
     private CreateTodoRequestBuilder() {
     }
 
-    public static CreateTodoRequestBuilder aTodo() {
+    public static CreateTodoRequestBuilder builder() {
         return new CreateTodoRequestBuilder();
     }
 

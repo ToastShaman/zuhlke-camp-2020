@@ -1,4 +1,6 @@
-package com.zuhlke.todo.client;
+package com.zuhlke.todo.client.model;
+
+import com.zuhlke.todo.client.TodoBuilder;
 
 import java.util.List;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package com.zuhlke.todo.client;
+package com.zuhlke.todo.client.model;
 
 import java.util.Objects;
 import java.util.StringJoiner;

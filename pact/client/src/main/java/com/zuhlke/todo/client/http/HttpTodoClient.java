@@ -3,6 +3,7 @@ package com.zuhlke.todo.client.http;
 import com.damnhandy.uri.template.UriTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zuhlke.todo.client.*;
+import com.zuhlke.todo.client.model.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,6 +13,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
+import java.util.Set;
 
 import static com.damnhandy.uri.template.UriTemplateBuilder.var;
 import static java.net.http.HttpRequest.BodyPublishers.ofByteArray;
@@ -50,7 +52,7 @@ public class HttpTodoClient implements TodoClient {
 
             HttpResponse<byte[]> response = client.send(request, BodyHandlers.ofByteArray());
 
-            if (response.statusCode() != 200 && response.statusCode() != 201) {
+            if (!Set.of(200, 201).contains(response.statusCode())) {
                 TodoApiError error = mapper.readValue(response.body(), TodoApiError.class);
                 throw new TodoClientException(response.statusCode(), error);
             }
@@ -85,7 +87,7 @@ public class HttpTodoClient implements TodoClient {
 
             HttpResponse<byte[]> response = client.send(request, BodyHandlers.ofByteArray());
 
-            if (response.statusCode() != 200 && response.statusCode() != 201) {
+            if (!Set.of(200, 201).contains(response.statusCode())) {
                 TodoApiError error = mapper.readValue(response.body(), TodoApiError.class);
                 throw new TodoClientException(response.statusCode(), error);
             }
@@ -93,6 +95,38 @@ public class HttpTodoClient implements TodoClient {
             Todo todo = mapper.readValue(response.body(), Todo.class);
 
             return new UpdateTodoResponse(todo);
+
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            throw new TodoClientException(e);
+        }
+    }
+
+    @Override
+    public DeleteTodoResponse delete(DeleteTodoRequest deleteTodoRequest) {
+        try {
+            String uri = UriTemplate.buildFromTemplate(host)
+                    .literal("/todo")
+                    .path(var("id"))
+                    .build()
+                    .set("id", deleteTodoRequest.getId())
+                    .expand();
+
+            HttpRequest request = HttpRequest.newBuilder(new URI(uri))
+                    .header("Accept", "application/json")
+                    .DELETE()
+                    .timeout(timeout)
+                    .build();
+
+            HttpResponse<byte[]> response = client.send(request, BodyHandlers.ofByteArray());
+
+            if (response.statusCode() != 200) {
+                TodoApiError error = mapper.readValue(response.body(), TodoApiError.class);
+                throw new TodoClientException(response.statusCode(), error);
+            }
+
+            Todo todo = mapper.readValue(response.body(), Todo.class);
+
+            return new DeleteTodoResponse(todo);
 
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new TodoClientException(e);

@@ -164,6 +164,138 @@
       ]
     },
     {
+      "description": "a deletion",
+      "request": {
+        "method": "DELETE",
+        "path": "/todo/-MLqrG6LkLkkKc1iMLBt"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "rev": "string",
+          "id": "string",
+          "text": "string",
+          "category": "string",
+          "status": "string",
+          "tags": [
+            "string",
+            "string"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.rev": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.text": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.status": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.category": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.tags[0]": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.tags[1]": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        },
+        "generators": {
+          "body": {
+            "$.id": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.rev": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.text": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.status": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.category": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.tags[0]": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.tags[1]": {
+              "type": "RandomString",
+              "size": 20
+            }
+          }
+        }
+      },
+      "providerStates": [
+        {
+          "name": "an existing todo with id=--MLqrG6LkLkkKc1iMLBt"
+        }
+      ]
+    },
+    {
       "description": "an update",
       "request": {
         "method": "PUT",

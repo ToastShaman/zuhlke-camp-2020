@@ -1,5 +1,7 @@
 package com.zuhlke.todo.client;
 
+import com.zuhlke.todo.client.model.Todo;
+
 import java.util.List;
 
 public final class TodoBuilder {

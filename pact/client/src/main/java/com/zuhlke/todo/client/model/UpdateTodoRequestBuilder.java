@@ -1,4 +1,6 @@
-package com.zuhlke.todo.client;
+package com.zuhlke.todo.client.model;
+
+import com.zuhlke.todo.client.TodoBuilder;
 
 import java.util.List;
 
@@ -10,18 +12,8 @@ public class UpdateTodoRequestBuilder {
         this.todoBuilder = todoBuilder;
     }
 
-    public static UpdateTodoRequestBuilder aUpdateTodoRequestBuilder(Todo todo) {
+    public static UpdateTodoRequestBuilder builder(Todo todo) {
         return new UpdateTodoRequestBuilder(todo.newBuilder());
-    }
-
-    public UpdateTodoRequestBuilder withId(String id) {
-        todoBuilder.withId(id);
-        return this;
-    }
-
-    public UpdateTodoRequestBuilder withRev(String rev) {
-        todoBuilder.withRev(rev);
-        return this;
     }
 
     public UpdateTodoRequestBuilder withText(String text) {

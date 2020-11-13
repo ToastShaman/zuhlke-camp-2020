@@ -1,4 +1,6 @@
-package com.zuhlke.todo.client;
+package com.zuhlke.todo.client.http;
+
+import com.zuhlke.todo.client.model.TodoApiError;
 
 import java.util.Objects;
 import java.util.Optional;
