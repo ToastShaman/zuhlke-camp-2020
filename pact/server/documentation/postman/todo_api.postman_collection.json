@@ -196,6 +196,158 @@
 			]
 		},
 		{
+			"name": "/health",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e71e8034-003e-4d40-8cb6-a0d47715cbf5",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "text/plain"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/health",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "/health",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "text/plain"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/health",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, no-transform, must-revalidate, private, max-age=0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 01 Jan 1970 01:00:00 BST"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "X-Accel-Expires",
+							"value": "0"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 15 Nov 2020 10:33:38 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "16"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": \"UP\"\n}"
+				},
+				{
+					"name": "/ping",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "text/plain",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/ping",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"ping"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "plain",
+					"header": [
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, no-transform, must-revalidate, private, max-age=0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/plain"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 01 Jan 1970 01:00:00 BST"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "X-Accel-Expires",
+							"value": "0"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 10 Nov 2020 15:53:36 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1"
+						}
+					],
+					"cookie": [],
+					"body": "."
+				}
+			]
+		},
+		{
 			"name": "/metrics",
 			"event": [
 				{

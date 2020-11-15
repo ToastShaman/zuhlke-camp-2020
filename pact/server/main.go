@@ -273,6 +273,7 @@ func NewTodoAPI(repository TodoRepository) *chi.Mux {
 	})
 
 	r.Get("/info", Info())
+	r.Get("/health", Health())
 	r.Handle("/metrics", promhttp.Handler())
 
 	r.Route("/todo", func(r chi.Router) {
@@ -291,6 +292,15 @@ func Info() func(w http.ResponseWriter, r *http.Request) {
 			Version string `json:"version"`
 		}
 		respondWith(http.StatusOK, &Info{Version: version}, w)
+	}
+}
+
+func Health() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		type Health struct {
+			Status string `json:"status"`
+		}
+		respondWith(http.StatusOK, &Health{Status: "UP"}, w)
 	}
 }
 
