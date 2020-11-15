@@ -311,7 +311,6 @@ func CreateTodo(rep TodoRepository, validate *validator.Validate) func(w http.Re
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 			respondWith(http.StatusInternalServerError, NewApiError(err), w)
 			return
-
 		}
 
 		if err := validate.Struct(&request); err != nil {
