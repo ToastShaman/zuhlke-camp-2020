@@ -298,14 +298,13 @@ func CreateTodo(rep TodoRepository, validate *validator.Validate) func(w http.Re
 	return func(w http.ResponseWriter, r *http.Request) {
 		var request CreateTodoRequest
 
-		err := json.NewDecoder(r.Body).Decode(&request)
-		if err != nil {
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 			respondWith(http.StatusInternalServerError, NewApiError(err), w)
 			return
+
 		}
 
-		err = validate.Struct(&request)
-		if err != nil {
+		if err := validate.Struct(&request); err != nil {
 			respondWith(http.StatusBadRequest, NewValidationError(err), w)
 			return
 		}
@@ -338,14 +337,12 @@ func UpdateTodoById(rep TodoRepository, validate *validator.Validate) func(w htt
 
 		var request UpdateTodoRequest
 
-		err := json.NewDecoder(r.Body).Decode(&request)
-		if err != nil {
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 			respondWith(http.StatusInternalServerError, NewApiError(err), w)
 			return
 		}
 
-		err = validate.Struct(&request)
-		if err != nil {
+		if err := validate.Struct(&request); err != nil {
 			respondWith(http.StatusBadRequest, NewValidationError(err), w)
 			return
 		}
@@ -387,9 +384,8 @@ func DeleteTodoById(rep TodoRepository) func(w http.ResponseWriter, r *http.Requ
 
 func respondWith(status int, body interface{}, w http.ResponseWriter) {
 	w.WriteHeader(status)
-	err := json.NewEncoder(w).Encode(body)
-	if err != nil {
-		panic(err)
+	if err := json.NewEncoder(w).Encode(body); err != nil {
+		log.Panic(err)
 	}
 }
 
