@@ -1,7 +1,8 @@
 import {check, sleep} from 'k6';
 import http from 'k6/http';
 
-export let options = {
+// noinspection JSUnusedGlobalSymbols
+export const options = {
     stages: [
         {duration: '5m', target: 100}, // simulate ramp-up of traffic from 1 to 100 users over 5 minutes.
         {duration: '10m', target: 100}, // stay at 100 users for 10 minutes
@@ -25,6 +26,7 @@ function createTodo() {
             "food"
         ]
     }), {
+        tags: {name: 'CreateTodo'},
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -46,6 +48,7 @@ function deleteTodo(id) {
     });
 }
 
+// noinspection JSUnusedGlobalSymbols
 export default () => {
     let r = createTodo()
     check(r, {'status is 200': (r) => r.status === 200});
