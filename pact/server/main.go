@@ -371,14 +371,12 @@ func UpdateTodoById(rep TodoRepository, validate *validator.Validate) func(w htt
 			switch err.(type) {
 			case *TodoNotFoundError:
 				respondWithJSON(http.StatusNotFound, &ApiTodoNotFoundError, w)
-				return
 			case *RevisionMismatchError:
 				respondWithJSON(http.StatusConflict, &ApiRevisionMismatchError, w)
-				return
 			default:
 				respondWithJSON(http.StatusInternalServerError, &ApiInternalServerError, w)
-				return
 			}
+			return
 		}
 
 		respondWithJSON(http.StatusOK, &todo, w)
