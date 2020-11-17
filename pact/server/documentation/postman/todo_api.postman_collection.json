@@ -15,6 +15,11 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.response.to.be.header(\"Content-Type\", \"application/json\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -110,7 +115,8 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
-							"});"
+							"});",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -205,6 +211,11 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.response.to.be.header(\"Content-Type\", \"application/json\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -459,6 +470,11 @@
 							"    var json = JSON.parse(responseBody);",
 							"    postman.setEnvironmentVariable(\"todo_id\", json.id);",
 							"    postman.setEnvironmentVariable(\"todo_rev\", json.rev);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.response.to.be.header(\"Content-Type\", \"application/json\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -572,6 +588,11 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.response.to.be.header(\"Content-Type\", \"application/json\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -680,6 +701,11 @@
 							"    var json = JSON.parse(responseBody);",
 							"    postman.setEnvironmentVariable(\"todo_id\", json.id);",
 							"    postman.setEnvironmentVariable(\"todo_rev\", json.rev);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.response.to.be.header(\"Content-Type\", \"application/json\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -795,6 +821,11 @@
 						"exec": [
 							"pm.test(\"Status code is 409\", function () {",
 							"    pm.response.to.have.status(409);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.response.to.be.header(\"Content-Type\", \"application/json\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -910,6 +941,11 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.response.to.be.header(\"Content-Type\", \"application/json\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1074,6 +1110,11 @@
 						"exec": [
 							"pm.test(\"Status code is 404\", function () {",
 							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.response.to.be.header(\"Content-Type\", \"application/json\");",
 							"});"
 						],
 						"type": "text/javascript"

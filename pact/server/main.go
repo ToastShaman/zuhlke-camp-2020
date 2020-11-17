@@ -258,19 +258,13 @@ func NewTodoAPI(repository TodoRepository) *chi.Mux {
 	prometheus.MustRegister(inFlightGauge, counter, histVec, writeHeaderVec, responseSize)
 
 	r.Use(Instrument)
+	r.Use(middleware.RealIP)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.NoCache)
-	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Heartbeat("/ping"))
 	r.Use(middleware.AllowContentType("application/json"))
 	r.Use(middleware.Recoverer)
-	r.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Add("Content-Type", "application/json")
-			next.ServeHTTP(w, r)
-		})
-	})
 
 	r.Get("/info", Info())
 	r.Get("/health", Health())
@@ -291,7 +285,7 @@ func Info() func(w http.ResponseWriter, r *http.Request) {
 		type Info struct {
 			Version string `json:"version"`
 		}
-		respondWith(http.StatusOK, &Info{Version: version}, w)
+		respondWithJSON(http.StatusOK, &Info{Version: version}, w)
 	}
 }
 
@@ -300,7 +294,7 @@ func Health() func(w http.ResponseWriter, r *http.Request) {
 		type Health struct {
 			Status string `json:"status"`
 		}
-		respondWith(http.StatusOK, &Health{Status: "UP"}, w)
+		respondWithJSON(http.StatusOK, &Health{Status: "UP"}, w)
 	}
 }
 
@@ -309,12 +303,12 @@ func CreateTodo(rep TodoRepository, validate *validator.Validate) func(w http.Re
 		var request CreateTodoRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-			respondWith(http.StatusInternalServerError, NewApiError(err), w)
+			respondWithJSON(http.StatusInternalServerError, NewApiError(err), w)
 			return
 		}
 
 		if err := validate.Struct(&request); err != nil {
-			respondWith(http.StatusBadRequest, NewValidationError(err), w)
+			respondWithJSON(http.StatusBadRequest, NewValidationError(err), w)
 			return
 		}
 
@@ -322,7 +316,7 @@ func CreateTodo(rep TodoRepository, validate *validator.Validate) func(w http.Re
 
 		rep.Persist(todo)
 
-		respondWith(http.StatusCreated, &todo, w)
+		respondWithJSON(http.StatusCreated, &todo, w)
 	}
 }
 
@@ -332,11 +326,11 @@ func GetTodoById(rep TodoRepository) func(w http.ResponseWriter, r *http.Request
 
 		t, ok := rep.FindById(id)
 		if !ok {
-			respondWith(http.StatusNotFound, &ApiTodoNotFoundError, w)
+			respondWithJSON(http.StatusNotFound, &ApiTodoNotFoundError, w)
 			return
 		}
 
-		respondWith(http.StatusOK, &t, w)
+		respondWithJSON(http.StatusOK, &t, w)
 	}
 }
 
@@ -347,12 +341,12 @@ func UpdateTodoById(rep TodoRepository, validate *validator.Validate) func(w htt
 		var request UpdateTodoRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-			respondWith(http.StatusInternalServerError, NewApiError(err), w)
+			respondWithJSON(http.StatusInternalServerError, NewApiError(err), w)
 			return
 		}
 
 		if err := validate.Struct(&request); err != nil {
-			respondWith(http.StatusBadRequest, NewValidationError(err), w)
+			respondWithJSON(http.StatusBadRequest, NewValidationError(err), w)
 			return
 		}
 
@@ -360,18 +354,18 @@ func UpdateTodoById(rep TodoRepository, validate *validator.Validate) func(w htt
 		if err != nil {
 			switch err.(type) {
 			case *TodoNotFoundError:
-				respondWith(http.StatusNotFound, &ApiTodoNotFoundError, w)
+				respondWithJSON(http.StatusNotFound, &ApiTodoNotFoundError, w)
 				return
 			case *RevisionMismatchError:
-				respondWith(http.StatusConflict, &ApiRevisionMismatchError, w)
+				respondWithJSON(http.StatusConflict, &ApiRevisionMismatchError, w)
 				return
 			default:
-				respondWith(http.StatusInternalServerError, &ApiInternalServerError, w)
+				respondWithJSON(http.StatusInternalServerError, &ApiInternalServerError, w)
 				return
 			}
 		}
 
-		respondWith(http.StatusOK, &todo, w)
+		respondWithJSON(http.StatusOK, &todo, w)
 	}
 }
 
@@ -381,17 +375,18 @@ func DeleteTodoById(rep TodoRepository) func(w http.ResponseWriter, r *http.Requ
 
 		t, ok := rep.FindById(id)
 		if !ok {
-			respondWith(http.StatusNotFound, &ApiTodoNotFoundError, w)
+			respondWithJSON(http.StatusNotFound, &ApiTodoNotFoundError, w)
 			return
 		}
 
 		rep.DeleteById(id)
 
-		respondWith(http.StatusOK, &t, w)
+		respondWithJSON(http.StatusOK, &t, w)
 	}
 }
 
-func respondWith(status int, body interface{}, w http.ResponseWriter) {
+func respondWithJSON(status int, body interface{}, w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	if err := json.NewEncoder(w).Encode(body); err != nil {
 		log.Panic(err)
