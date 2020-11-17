@@ -40,7 +40,7 @@ func findPactFiles(root string) []string {
 }
 
 func startServer(repository TodoRepository, done chan bool) {
-	mux := NewTodoAPI(repository)
+	mux := NewTodoAPI(repository, Options{Cors: false})
 	server := &http.Server{Addr: serverAddr, Handler: mux}
 
 	go func() {
