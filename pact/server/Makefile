@@ -17,9 +17,10 @@ build: clean
 clean:
 	rm -rf ./build
 
+# example: make run ARGS="-cors"
 .PHONY: run
 run:
-	go run $(FLAGS) main.go
+	go run $(FLAGS) main.go $(ARGS)
 
 .PHONY: newman
 newman:
@@ -29,3 +30,7 @@ newman:
 .PHONY: perf
 perf:
 	docker run --rm -i loadimpact/k6 run -e MY_HOSTNAME=host.docker.internal:3000 - <perf/script.js
+
+.PHONY: swagger
+swagger:
+	docker run --rm -p 9002:8080 -v $(DIR)/documentation/api.yml:/api.yaml -e SWAGGER_JSON=/api.yaml swaggerapi/swagger-ui

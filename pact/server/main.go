@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/go-playground/validator/v10"
 	"github.com/kjk/betterguid"
 	"github.com/prometheus/client_golang/prometheus"
@@ -250,7 +251,11 @@ func Instrument(next http.Handler) http.Handler {
 	)
 }
 
-func NewTodoAPI(repository TodoRepository) *chi.Mux {
+type Options struct {
+	Cors bool
+}
+
+func NewTodoAPI(repository TodoRepository, options Options) *chi.Mux {
 	validate := validator.New()
 
 	r := chi.NewRouter()
@@ -265,6 +270,17 @@ func NewTodoAPI(repository TodoRepository) *chi.Mux {
 	r.Use(middleware.Heartbeat("/ping"))
 	r.Use(middleware.AllowContentType("application/json"))
 	r.Use(middleware.Recoverer)
+
+	if options.Cors {
+		r.Use(cors.Handler(cors.Options{
+			AllowedOrigins:   []string{"http://localhost:9002"},
+			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowedHeaders:   []string{"Accept", "Content-Type"},
+			ExposedHeaders:   []string{"Link"},
+			AllowCredentials: false,
+			MaxAge:           300, // Maximum value not ignored by any of major browsers
+		}))
+	}
 
 	r.Get("/info", Info())
 	r.Get("/health", Health())
@@ -396,13 +412,14 @@ func respondWithJSON(status int, body interface{}, w http.ResponseWriter) {
 var (
 	version = "dev"
 	addr    = flag.String("listen-address", "localhost:3000", "The address to listen on for HTTP requests.")
+	crs     = flag.Bool("cors", false, "Enable CORS headers")
 )
 
 func main() {
 	flag.Parse()
 
 	repository := NewInMemoryTodoRepository()
-	mux := NewTodoAPI(repository)
+	mux := NewTodoAPI(repository, Options{Cors: *crs})
 
 	fmt.Printf("Server listening on %s\n", *addr)
 	log.Fatal(http.ListenAndServe(*addr, mux))
