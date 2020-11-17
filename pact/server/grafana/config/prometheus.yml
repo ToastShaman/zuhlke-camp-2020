@@ -14,9 +14,9 @@ scrape_configs:
     static_configs:
       - targets: ['prometheus:9090']
 
-  - job_name: todo
+  - job_name: pushgateway
     scrape_interval: 5s
     scrape_timeout: 2s
     honor_labels: true
     static_configs:
-      - targets: ['host.docker.internal:3000']
+      - targets: [ 'pushgateway:9091' ]

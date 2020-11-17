@@ -21,3 +21,8 @@ services:
       - '--storage.tsdb.path=/data'
     ports:
       - 9090:9090
+
+  pushgateway:
+    image: prom/pushgateway:v1.3.0
+    ports:
+      - 9091:9091

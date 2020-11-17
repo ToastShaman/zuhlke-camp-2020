@@ -11,9 +11,11 @@ import (
 	"github.com/kjk/betterguid"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/prometheus/client_golang/prometheus/push"
 	"log"
 	"net/http"
 	"sync"
+	"time"
 )
 
 type (
@@ -196,6 +198,9 @@ func NewApiError(err error) *ApiError {
 }
 
 var (
+	ticker = time.NewTicker(2 * time.Second)
+	done   = make(chan bool)
+
 	inFlightGauge = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "in_flight_requests",
 		Help: "A gauge of requests currently being served by the wrapped handler.",
@@ -251,8 +256,20 @@ func Instrument(next http.Handler) http.Handler {
 	)
 }
 
+func StartPushing(pusher *push.Pusher) {
+	for {
+		select {
+		case <-done:
+			return
+		case _ = <-ticker.C:
+			_ = pusher.Add()
+		}
+	}
+}
+
 type Options struct {
-	Cors bool
+	Cors            bool
+	PushgatewayAddr string
 }
 
 func NewTodoAPI(repository TodoRepository, options Options) *chi.Mux {
@@ -261,6 +278,8 @@ func NewTodoAPI(repository TodoRepository, options Options) *chi.Mux {
 	r := chi.NewRouter()
 
 	prometheus.MustRegister(inFlightGauge, counter, histVec, writeHeaderVec, responseSize)
+
+	go StartPushing(push.New(options.PushgatewayAddr, "todo").Gatherer(prometheus.DefaultGatherer))
 
 	r.Use(Instrument)
 	r.Use(middleware.RealIP)
@@ -410,6 +429,7 @@ func respondWithJSON(status int, body interface{}, w http.ResponseWriter) {
 var (
 	version = "dev"
 	addr    = flag.String("listen-address", "localhost:3000", "The address to listen on for HTTP requests.")
+	pgwaddr = flag.String("pushgateway-address", "http://localhost:9091", "The address of the Prometheus Pushgateway.")
 	crs     = flag.Bool("cors", false, "Enable CORS headers")
 )
 
@@ -417,7 +437,10 @@ func main() {
 	flag.Parse()
 
 	repository := NewInMemoryTodoRepository()
-	mux := NewTodoAPI(repository, Options{Cors: *crs})
+	mux := NewTodoAPI(repository, Options{
+		Cors:            *crs,
+		PushgatewayAddr: *pgwaddr,
+	})
 
 	fmt.Printf("Server listening on %s\n", *addr)
 	log.Fatal(http.ListenAndServe(*addr, mux))
