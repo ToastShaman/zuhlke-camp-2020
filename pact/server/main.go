@@ -20,7 +20,7 @@ import (
 
 type (
 	Todo struct {
-		Id       string   `json:"id"`
+		ID       string   `json:"id"`
 		Revision string   `json:"rev"`
 		Text     string   `json:"text"`
 		Status   string   `json:"status"`
@@ -29,12 +29,12 @@ type (
 	}
 )
 
-func NewId() string {
+func NewID() string {
 	return betterguid.New()
 }
 
-func (t Todo) WithNewId(id string) Todo {
-	t.Id = id
+func (t Todo) WithNewID(id string) Todo {
+	t.ID = id
 	return t
 }
 
@@ -45,8 +45,8 @@ func (t Todo) WithNewRevision(id string) Todo {
 
 type (
 	TodoRepository interface {
-		FindById(id string) (Todo, bool)
-		DeleteById(id string)
+		FindByID(id string) (Todo, bool)
+		DeleteByID(id string)
 		Persist(todo Todo)
 		Update(todo Todo) (Todo, error)
 		Prune()
@@ -54,7 +54,7 @@ type (
 
 	InMemoryTodoRepository struct {
 		mutex    sync.RWMutex
-		todoById map[string]Todo
+		todoByID map[string]Todo
 	}
 
 	TodoNotFoundError struct {
@@ -81,14 +81,14 @@ func (e *RevisionMismatchError) Error() string {
 }
 
 func NewInMemoryTodoRepository() TodoRepository {
-	return &InMemoryTodoRepository{todoById: make(map[string]Todo)}
+	return &InMemoryTodoRepository{todoByID: make(map[string]Todo)}
 }
 
-func (r *InMemoryTodoRepository) FindById(id string) (Todo, bool) {
+func (r *InMemoryTodoRepository) FindByID(id string) (Todo, bool) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
-	t, ok := r.todoById[id]
+	t, ok := r.todoByID[id]
 	if !ok {
 		return *emptyTodo, false
 	}
@@ -100,14 +100,14 @@ func (r *InMemoryTodoRepository) Persist(todo Todo) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	r.todoById[todo.Id] = todo
+	r.todoByID[todo.ID] = todo
 }
 
 func (r *InMemoryTodoRepository) Update(todo Todo) (Todo, error) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	found, ok := r.todoById[todo.Id]
+	found, ok := r.todoByID[todo.ID]
 	if !ok {
 		return *emptyTodo, todoNotFoundError
 	}
@@ -116,23 +116,23 @@ func (r *InMemoryTodoRepository) Update(todo Todo) (Todo, error) {
 		return *emptyTodo, revisionMismatchError
 	}
 
-	r.todoById[todo.Id] = todo.WithNewRevision(NewId())
+	r.todoByID[todo.ID] = todo.WithNewRevision(NewID())
 
-	return r.todoById[todo.Id], nil
+	return r.todoByID[todo.ID], nil
 }
 
 func (r *InMemoryTodoRepository) Prune() {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	r.todoById = make(map[string]Todo)
+	r.todoByID = make(map[string]Todo)
 }
 
-func (r *InMemoryTodoRepository) DeleteById(id string) {
+func (r *InMemoryTodoRepository) DeleteByID(id string) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	delete(r.todoById, id)
+	delete(r.todoByID, id)
 }
 
 type (
@@ -151,7 +151,7 @@ type (
 		Tags     []string `json:"tags" validate:"required"`
 	}
 
-	ApiError struct {
+	APIError struct {
 		Message string   `json:"message"`
 		Details []string `json:"details,omitempty"`
 	}
@@ -159,8 +159,8 @@ type (
 
 func (r *CreateTodoRequest) AsNewTodo() Todo {
 	return Todo{
-		Id:       NewId(),
-		Revision: NewId(),
+		ID:       NewID(),
+		Revision: NewID(),
 		Text:     r.Text,
 		Status:   r.Status,
 		Category: r.Category,
@@ -170,7 +170,7 @@ func (r *CreateTodoRequest) AsNewTodo() Todo {
 
 func (r *UpdateTodoRequest) AsNewTodo(id string) Todo {
 	return Todo{
-		Id:       id,
+		ID:       id,
 		Revision: r.Revision,
 		Text:     r.Text,
 		Status:   r.Status,
@@ -180,21 +180,21 @@ func (r *UpdateTodoRequest) AsNewTodo(id string) Todo {
 }
 
 var (
-	ApiTodoNotFoundError     = &ApiError{Message: "Todo not found"}
-	ApiRevisionMismatchError = &ApiError{Message: "Revision mismatch"}
-	ApiInternalServerError   = &ApiError{Message: "Oops"}
+	APITodoNotFoundError     = &APIError{Message: "Todo not found"}
+	APIRevisionMismatchError = &APIError{Message: "Revision mismatch"}
+	APIInternalServerError   = &APIError{Message: "Oops"}
 )
 
-func NewValidationError(err error) *ApiError {
+func NewValidationError(err error) *APIError {
 	var details []string
 	for _, err := range err.(validator.ValidationErrors) {
 		details = append(details, err.Error())
 	}
-	return &ApiError{Message: "Validation failed", Details: details}
+	return &APIError{Message: "Validation failed", Details: details}
 }
 
-func NewApiError(err error) *ApiError {
-	return &ApiError{Message: err.Error()}
+func NewAPIError(err error) *APIError {
+	return &APIError{Message: err.Error()}
 }
 
 var (
@@ -261,7 +261,7 @@ func StartPushing(pusher *push.Pusher) {
 		select {
 		case <-done:
 			return
-		case _ = <-ticker.C:
+		case <-ticker.C:
 			_ = pusher.Add()
 		}
 	}
@@ -307,9 +307,9 @@ func NewTodoAPI(repository TodoRepository, options Options) *chi.Mux {
 
 	r.Route("/todo", func(r chi.Router) {
 		r.Post("/", CreateTodo(repository, validate))
-		r.Put("/{id}", UpdateTodoById(repository, validate))
-		r.Get("/{id}", GetTodoById(repository))
-		r.Delete("/{id}", DeleteTodoById(repository))
+		r.Put("/{id}", UpdateTodoByID(repository, validate))
+		r.Get("/{id}", GetTodoByID(repository))
+		r.Delete("/{id}", DeleteTodoByID(repository))
 	})
 
 	return r
@@ -338,7 +338,7 @@ func CreateTodo(rep TodoRepository, validate *validator.Validate) func(w http.Re
 		var request CreateTodoRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-			respondWithJSON(http.StatusInternalServerError, NewApiError(err), w)
+			respondWithJSON(http.StatusInternalServerError, NewAPIError(err), w)
 			return
 		}
 
@@ -355,13 +355,13 @@ func CreateTodo(rep TodoRepository, validate *validator.Validate) func(w http.Re
 	}
 }
 
-func GetTodoById(rep TodoRepository) func(w http.ResponseWriter, r *http.Request) {
+func GetTodoByID(rep TodoRepository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
 
-		t, ok := rep.FindById(id)
+		t, ok := rep.FindByID(id)
 		if !ok {
-			respondWithJSON(http.StatusNotFound, &ApiTodoNotFoundError, w)
+			respondWithJSON(http.StatusNotFound, &APITodoNotFoundError, w)
 			return
 		}
 
@@ -369,14 +369,14 @@ func GetTodoById(rep TodoRepository) func(w http.ResponseWriter, r *http.Request
 	}
 }
 
-func UpdateTodoById(rep TodoRepository, validate *validator.Validate) func(w http.ResponseWriter, r *http.Request) {
+func UpdateTodoByID(rep TodoRepository, validate *validator.Validate) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
 
 		var request UpdateTodoRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-			respondWithJSON(http.StatusInternalServerError, NewApiError(err), w)
+			respondWithJSON(http.StatusInternalServerError, NewAPIError(err), w)
 			return
 		}
 
@@ -389,11 +389,11 @@ func UpdateTodoById(rep TodoRepository, validate *validator.Validate) func(w htt
 		if err != nil {
 			switch err.(type) {
 			case *TodoNotFoundError:
-				respondWithJSON(http.StatusNotFound, &ApiTodoNotFoundError, w)
+				respondWithJSON(http.StatusNotFound, &APITodoNotFoundError, w)
 			case *RevisionMismatchError:
-				respondWithJSON(http.StatusConflict, &ApiRevisionMismatchError, w)
+				respondWithJSON(http.StatusConflict, &APIRevisionMismatchError, w)
 			default:
-				respondWithJSON(http.StatusInternalServerError, &ApiInternalServerError, w)
+				respondWithJSON(http.StatusInternalServerError, &APIInternalServerError, w)
 			}
 			return
 		}
@@ -402,17 +402,17 @@ func UpdateTodoById(rep TodoRepository, validate *validator.Validate) func(w htt
 	}
 }
 
-func DeleteTodoById(rep TodoRepository) func(w http.ResponseWriter, r *http.Request) {
+func DeleteTodoByID(rep TodoRepository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
 
-		t, ok := rep.FindById(id)
+		t, ok := rep.FindByID(id)
 		if !ok {
-			respondWithJSON(http.StatusNotFound, &ApiTodoNotFoundError, w)
+			respondWithJSON(http.StatusNotFound, &APITodoNotFoundError, w)
 			return
 		}
 
-		rep.DeleteById(id)
+		rep.DeleteByID(id)
 
 		respondWithJSON(http.StatusOK, &t, w)
 	}

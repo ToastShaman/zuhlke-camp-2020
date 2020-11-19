@@ -91,7 +91,7 @@ func TestProvider(t *testing.T) {
 
 			"an existing todo with id=--MLqrG6LkLkkKc1iMLBt": func() error {
 				repository.Persist(Todo{
-					Id:       "-MLqrG6LkLkkKc1iMLBt",
+					ID:       "-MLqrG6LkLkkKc1iMLBt",
 					Revision: "-MLivp1BrS59mMbSN7Jr",
 					Text:     "Don't forget the milk",
 					Status:   "TODO",

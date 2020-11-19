@@ -17,7 +17,7 @@
 .idea/
 *.iml
 
-build/
+out/
 
 log/
 
