@@ -3,6 +3,7 @@ COMMIT := $(shell git rev-parse --short HEAD)
 DATE := $(shell git log -1 --format=%cd --date=format:"%Y%m%d")
 VERSION := $(COMMIT)-$(DATE)
 FLAGS := -ldflags "-X main.version=$(VERSION)"
+GOFMT_FILES = $(shell go list -f '{{.Dir}}' ./... | grep -v '/pb')
 
 test:
 	@go test -v
