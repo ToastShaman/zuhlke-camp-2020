@@ -10,8 +10,6 @@ require (
 	github.com/pact-foundation/pact-go v1.5.1
 	github.com/prometheus/client_golang v1.8.0
 	github.com/prometheus/common v0.15.0 // indirect
-	golang.org/x/crypto v0.0.0-20201116153603-4be66e5b6582 // indirect
-	golang.org/x/net v0.0.0-20200822124328-c89045814202 // indirect
-	golang.org/x/sys v0.0.0-20201116194326-cc9327a14d48 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9 // indirect
+	golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 // indirect
 )

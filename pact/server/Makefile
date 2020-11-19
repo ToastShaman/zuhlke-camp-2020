@@ -2,18 +2,18 @@ DIR := ${CURDIR}
 COMMIT := $(shell git rev-parse --short HEAD)
 DATE := $(shell git log -1 --format=%cd --date=format:"%Y%m%d")
 VERSION := $(COMMIT)-$(DATE)
-FLAGS := -ldflags "-X main.version=$(VERSION)"
+FLAGS := -ldflags "-s -w -extldflags '-static' -X main.version=$(VERSION)"
 GOFMT_FILES = $(shell go list -f '{{.Dir}}' ./... | grep -v '/pb')
 
 test:
 	@go test -v
 .PHONY: test
 
-lbuild: clean test
-	@env GOOS=darwin GOARCH=amd64 go build $(FLAGS) -o out/todo-server-${VERSION}-darwin-amd64
+lbuild: clean
+	@env GO111MODULE=on GOOS=darwin GOARCH=amd64 go build -trimpath $(FLAGS) -o out/todo-server-darwin-amd64
 .PHONY: build
 
-build: clean test
+build: clean
 	@env DOCKER_BUILDKIT=1 docker build --build-arg VERSION="$(VERSION)" -o out .
 .PHONY: dbuild
 
