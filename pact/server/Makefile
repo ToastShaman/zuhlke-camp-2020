@@ -66,7 +66,8 @@ newman:
 		--network="host" \
 		-v $(DIR)/documentation/postman:/etc/newman \
 		-t postman/newman \
-		run todo_api.postman_collection.json --environment="docker.postman_environment.json"
+		run todo_api.postman_collection.json \
+		--environment="docker.postman_environment.json"
 .PHONY: newman
 
 perf:
