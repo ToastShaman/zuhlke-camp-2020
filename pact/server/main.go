@@ -57,27 +57,24 @@ type (
 		todoByID map[string]Todo
 	}
 
-	TodoNotFoundError struct {
-		message string
-	}
-
-	RevisionMismatchError struct {
-		message string
-	}
-)
-
-var (
-	todoNotFoundError     = &TodoNotFoundError{message: "Todo not found"}
-	revisionMismatchError = &RevisionMismatchError{message: "Revision mismatch"}
-	emptyTodo             = new(Todo)
+	TodoNotFoundError     struct{}
+	RevisionMismatchError struct{}
 )
 
 func (e *TodoNotFoundError) Error() string {
-	return e.message
+	return "Todo not found"
 }
 
 func (e *RevisionMismatchError) Error() string {
-	return e.message
+	return "Revision mismatch"
+}
+
+func NewRevisionMismatchError() *RevisionMismatchError {
+	return &RevisionMismatchError{}
+}
+
+func NewTodoNotFoundError() *TodoNotFoundError {
+	return &TodoNotFoundError{}
 }
 
 func NewInMemoryTodoRepository() TodoRepository {
@@ -90,7 +87,7 @@ func (r *InMemoryTodoRepository) FindByID(id string) (Todo, bool) {
 
 	t, ok := r.todoByID[id]
 	if !ok {
-		return *emptyTodo, false
+		return Todo{}, false
 	}
 
 	return t, true
@@ -109,11 +106,11 @@ func (r *InMemoryTodoRepository) Update(todo Todo) (Todo, error) {
 
 	found, ok := r.todoByID[todo.ID]
 	if !ok {
-		return *emptyTodo, todoNotFoundError
+		return Todo{}, NewTodoNotFoundError()
 	}
 
 	if found.Revision != todo.Revision {
-		return *emptyTodo, revisionMismatchError
+		return Todo{}, NewRevisionMismatchError()
 	}
 
 	r.todoByID[todo.ID] = todo.WithNewRevision(NewID())
@@ -179,11 +176,17 @@ func (r *UpdateTodoRequest) AsNewTodo(id string) Todo {
 	}
 }
 
-var (
-	APITodoNotFoundError     = &APIError{Message: "Todo not found"}
-	APIRevisionMismatchError = &APIError{Message: "Revision mismatch"}
-	APIInternalServerError   = &APIError{Message: "Oops"}
-)
+func NewAPIInternalServerError() *APIError {
+	return &APIError{Message: "Oops"}
+}
+
+func NewAPIRevisionMismatchError() *APIError {
+	return &APIError{Message: "Revision mismatch"}
+}
+
+func NewAPITodoNotFoundError() *APIError {
+	return &APIError{Message: "Todo not found"}
+}
 
 func NewValidationError(err error) *APIError {
 	var details []string
@@ -337,7 +340,10 @@ func CreateTodo(rep TodoRepository, validate *validator.Validate) func(w http.Re
 	return func(w http.ResponseWriter, r *http.Request) {
 		var request CreateTodoRequest
 
-		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		d := json.NewDecoder(r.Body)
+		d.DisallowUnknownFields()
+
+		if err := d.Decode(&request); err != nil {
 			respondWithJSON(http.StatusInternalServerError, NewAPIError(err), w)
 			return
 		}
@@ -361,7 +367,7 @@ func GetTodoByID(rep TodoRepository) func(w http.ResponseWriter, r *http.Request
 
 		t, ok := rep.FindByID(id)
 		if !ok {
-			respondWithJSON(http.StatusNotFound, &APITodoNotFoundError, w)
+			respondWithJSON(http.StatusNotFound, NewAPITodoNotFoundError(), w)
 			return
 		}
 
@@ -375,7 +381,10 @@ func UpdateTodoByID(rep TodoRepository, validate *validator.Validate) func(w htt
 
 		var request UpdateTodoRequest
 
-		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		d := json.NewDecoder(r.Body)
+		d.DisallowUnknownFields()
+
+		if err := d.Decode(&request); err != nil {
 			respondWithJSON(http.StatusInternalServerError, NewAPIError(err), w)
 			return
 		}
@@ -389,11 +398,11 @@ func UpdateTodoByID(rep TodoRepository, validate *validator.Validate) func(w htt
 		if err != nil {
 			switch err.(type) {
 			case *TodoNotFoundError:
-				respondWithJSON(http.StatusNotFound, &APITodoNotFoundError, w)
+				respondWithJSON(http.StatusNotFound, NewAPITodoNotFoundError(), w)
 			case *RevisionMismatchError:
-				respondWithJSON(http.StatusConflict, &APIRevisionMismatchError, w)
+				respondWithJSON(http.StatusConflict, NewAPIRevisionMismatchError(), w)
 			default:
-				respondWithJSON(http.StatusInternalServerError, &APIInternalServerError, w)
+				respondWithJSON(http.StatusInternalServerError, NewAPIInternalServerError(), w)
 			}
 			return
 		}
@@ -408,7 +417,7 @@ func DeleteTodoByID(rep TodoRepository) func(w http.ResponseWriter, r *http.Requ
 
 		t, ok := rep.FindByID(id)
 		if !ok {
-			respondWithJSON(http.StatusNotFound, &APITodoNotFoundError, w)
+			respondWithJSON(http.StatusNotFound, NewAPITodoNotFoundError(), w)
 			return
 		}
 
