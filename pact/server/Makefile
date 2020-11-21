@@ -4,17 +4,30 @@ DATE := $(shell git log -1 --format=%cd --date=format:"%Y%m%d")
 VERSION := $(COMMIT)-$(DATE)
 FLAGS := -ldflags "-s -w -extldflags '-static' -X main.version=$(VERSION)"
 GOFMT_FILES = $(shell go list -f '{{.Dir}}' ./... | grep -v '/pb')
+ARTEFACT_NAME = "todo-server"
 
 test:
 	@go test -v
 .PHONY: test
 
 lbuild: clean
-	@env GO111MODULE=on GOOS=darwin GOARCH=amd64 go build -trimpath $(FLAGS) -o out/todo-server-darwin-amd64
+	@env GO111MODULE=on GOOS=darwin GOARCH=amd64 \
+		go build -trimpath $(FLAGS) \
+		-o out/$(ARTEFACT_NAME)-darwin-amd64
 .PHONY: build
 
 build: clean
-	@env DOCKER_BUILDKIT=1 docker build --build-arg VERSION="$(VERSION)" -o out .
+	@env DOCKER_BUILDKIT=1 docker build \
+		--build-arg VERSION="$(VERSION)" \
+		--build-arg ARTEFACT_NAME="$(ARTEFACT_NAME)" \
+		-o out \
+		-f build.darwin.Dockerfile .
+
+	@env DOCKER_BUILDKIT=1 docker build \
+		--build-arg VERSION="$(VERSION)" \
+		--build-arg ARTEFACT_NAME="$(ARTEFACT_NAME)" \
+		-o out \
+		-f build.linux.Dockerfile .
 .PHONY: dbuild
 
 clean:
