@@ -9,7 +9,7 @@ services:
     env_file:
       - config/grafana.monitoring.env
     ports:
-      - 3030:3000
+      - 3000:3000
 
   prometheus:
     image: prom/prometheus:v2.22.1

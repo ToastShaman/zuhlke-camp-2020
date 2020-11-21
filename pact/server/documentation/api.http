@@ -1,20 +1,20 @@
-GET http://localhost:3000/info
+GET http://localhost:8080/info
 Accept: text/plain
 
 ###
-GET http://localhost:3000/ping
+GET http://localhost:8080/ping
 Accept: text/plain
 
 ###
-GET http://localhost:3000/metrics
+GET http://localhost:8080/metrics
 Accept: text/plain
 
 ###
-GET http://localhost:3000/todo/1
+GET http://localhost:8080/todo/1
 Accept: application/json
 
 ###
-POST http://localhost:3000/todo
+POST http://localhost:8080/todo
 Accept: application/json
 Content-Type: application/json
 
@@ -23,7 +23,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/todo
+POST http://localhost:8080/todo
 Accept: application/json
 Content-Type: application/json
 
@@ -38,11 +38,11 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/todo/-MLisUCmJDDlkcxUXmRV
+GET http://localhost:8080/todo/-MLisUCmJDDlkcxUXmRV
 Accept: application/json
 
 ###
-PUT http://localhost:3000/todo/-MLivp1BrS59mMbSN7Jq
+PUT http://localhost:8080/todo/-MLivp1BrS59mMbSN7Jq
 Accept: application/json
 Content-Type: application/json
 
@@ -58,5 +58,5 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/todo/-MLx1s8kTDwES1PpYe5I
+DELETE http://localhost:8080/todo/-MLx1s8kTDwES1PpYe5I
 Accept: application/json

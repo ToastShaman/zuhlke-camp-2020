@@ -428,7 +428,7 @@ func respondWithJSON(status int, body interface{}, w http.ResponseWriter) {
 
 var (
 	version = "dev"
-	addr    = flag.String("listen-address", "localhost:3000", "The address to listen on for HTTP requests.")
+	addr    = flag.String("listen-address", ":8080", "The address to listen on for HTTP requests.")
 	pgwaddr = flag.String("pushgateway-address", "http://localhost:9091", "The address of the Prometheus Pushgateway.")
 	crs     = flag.Bool("cors", false, "Enable CORS headers")
 )

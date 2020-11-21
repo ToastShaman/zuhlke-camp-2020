@@ -72,12 +72,12 @@ newman:
 perf:
 	@docker run --rm -i \
 		loadimpact/k6 \
-		run -e MY_HOSTNAME=host.docker.internal:3000 - <perf/script.js
+		run -e MY_HOSTNAME=host.docker.internal:8080 - <perf/script.js
 .PHONY: perf
 
 swagger:
 	@docker run --rm \
-		-p 9002:8080 \
+		-p 9090:8080 \
 		-v $(DIR)/documentation/api.yml:/api.yaml \
 		-e SWAGGER_JSON=/api.yaml \
 		swaggerapi/swagger-ui
