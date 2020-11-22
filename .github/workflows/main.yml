@@ -32,4 +32,5 @@ jobs:
       - name: Run go test
         run: |
           cd pact/server
+          go get gopkg.in/pact-foundation/pact-go.v1
           go test -v 
