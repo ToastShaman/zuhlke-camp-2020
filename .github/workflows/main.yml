@@ -49,4 +49,7 @@ jobs:
       - name: Run go test
         run: |
           cd pact/server
+          pact-mock-service version
+          pact-provider-verifier version
+          pact-broker version
           go test -v
