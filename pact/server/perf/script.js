@@ -58,5 +58,6 @@ export default () => {
 
     r = deleteTodo(id)
     check(r, {'status is 200': (r) => r.status === 200});
+
     sleep(1);
 }

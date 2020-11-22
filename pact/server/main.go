@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/go-chi/chi"
@@ -12,8 +13,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/client_golang/prometheus/push"
+	"io"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -43,11 +46,16 @@ func (t Todo) WithNewRevision(id string) Todo {
 	return t
 }
 
+const (
+	// Max number of entries allowed to be stored in the repository
+	maxCapacity = 100
+)
+
 type (
 	TodoRepository interface {
 		FindByID(id string) (Todo, bool)
 		DeleteByID(id string)
-		Persist(todo Todo)
+		Persist(todo Todo) error
 		Update(todo Todo) (Todo, error)
 		Prune()
 	}
@@ -59,6 +67,7 @@ type (
 
 	TodoNotFoundError     struct{}
 	RevisionMismatchError struct{}
+	OutOfCapacityError    struct{}
 )
 
 func (e *TodoNotFoundError) Error() string {
@@ -69,12 +78,20 @@ func (e *RevisionMismatchError) Error() string {
 	return "Revision mismatch"
 }
 
+func (e *OutOfCapacityError) Error() string {
+	return "Repository is out of capacity"
+}
+
 func NewRevisionMismatchError() *RevisionMismatchError {
 	return &RevisionMismatchError{}
 }
 
 func NewTodoNotFoundError() *TodoNotFoundError {
 	return &TodoNotFoundError{}
+}
+
+func NewOutOfCapacityError() *OutOfCapacityError {
+	return &OutOfCapacityError{}
 }
 
 func NewInMemoryTodoRepository() TodoRepository {
@@ -93,11 +110,17 @@ func (r *InMemoryTodoRepository) FindByID(id string) (Todo, bool) {
 	return t, true
 }
 
-func (r *InMemoryTodoRepository) Persist(todo Todo) {
+func (r *InMemoryTodoRepository) Persist(todo Todo) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
+	if len(r.todoByID) >= maxCapacity {
+		return NewOutOfCapacityError()
+	}
+
 	r.todoByID[todo.ID] = todo
+
+	return nil
 }
 
 func (r *InMemoryTodoRepository) Update(todo Todo) (Todo, error) {
@@ -340,12 +363,9 @@ func CreateTodo(rep TodoRepository, validate *validator.Validate) func(w http.Re
 	return func(w http.ResponseWriter, r *http.Request) {
 		var request CreateTodoRequest
 
-		d := json.NewDecoder(r.Body)
-		d.DisallowUnknownFields()
-
-		if err := d.Decode(&request); err != nil {
-			respondWithJSON(http.StatusInternalServerError, NewAPIError(err), w)
-			return
+		status, err := Unmarshall(w, r, &request)
+		if err != nil {
+			respondWithJSON(status, NewAPIError(err), w)
 		}
 
 		if err := validate.Struct(&request); err != nil {
@@ -355,7 +375,9 @@ func CreateTodo(rep TodoRepository, validate *validator.Validate) func(w http.Re
 
 		todo := request.AsNewTodo()
 
-		rep.Persist(todo)
+		if err = rep.Persist(todo); err != nil {
+			respondWithJSON(http.StatusTooManyRequests, NewAPIError(err), w)
+		}
 
 		respondWithJSON(http.StatusCreated, &todo, w)
 	}
@@ -381,12 +403,9 @@ func UpdateTodoByID(rep TodoRepository, validate *validator.Validate) func(w htt
 
 		var request UpdateTodoRequest
 
-		d := json.NewDecoder(r.Body)
-		d.DisallowUnknownFields()
-
-		if err := d.Decode(&request); err != nil {
-			respondWithJSON(http.StatusInternalServerError, NewAPIError(err), w)
-			return
+		status, err := Unmarshall(w, r, &request)
+		if err != nil {
+			respondWithJSON(status, NewAPIError(err), w)
 		}
 
 		if err := validate.Struct(&request); err != nil {
@@ -425,6 +444,52 @@ func DeleteTodoByID(rep TodoRepository) func(w http.ResponseWriter, r *http.Requ
 
 		respondWithJSON(http.StatusOK, &t, w)
 	}
+}
+
+const (
+	// Max request size of 64KB. None of the current API requests for this
+	// server are near that limit. Prevents us from unnecessarily parsing JSON
+	// payloads that are much large than we anticipate.
+	maxBodyBytes = 64_000
+)
+
+func Unmarshall(w http.ResponseWriter, r *http.Request, data interface{}) (int, error) {
+	if t := r.Header.Get("content-type"); len(t) < 16 || t[:16] != "application/json" {
+		return http.StatusUnsupportedMediaType, fmt.Errorf("content-type is not application/json")
+	}
+
+	defer r.Body.Close()
+	r.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes)
+
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+
+	if err := d.Decode(&data); err != nil {
+		var syntaxErr *json.SyntaxError
+		var unmarshalError *json.UnmarshalTypeError
+		switch {
+		case errors.As(err, &syntaxErr):
+			return http.StatusBadRequest, fmt.Errorf("malformed json at position %v", syntaxErr.Offset)
+		case errors.Is(err, io.ErrUnexpectedEOF):
+			return http.StatusBadRequest, fmt.Errorf("malformed json")
+		case errors.As(err, &unmarshalError):
+			return http.StatusBadRequest, fmt.Errorf("invalid value %v at position %v", unmarshalError.Field, unmarshalError.Offset)
+		case strings.HasPrefix(err.Error(), "json: unknown field"):
+			fieldName := strings.TrimPrefix(err.Error(), "json: unknown field ")
+			return http.StatusBadRequest, fmt.Errorf("unknown field %s", fieldName)
+		case errors.Is(err, io.EOF):
+			return http.StatusBadRequest, fmt.Errorf("body must not be empty")
+		case err.Error() == "http: request body too large":
+			return http.StatusRequestEntityTooLarge, err
+		default:
+			return http.StatusInternalServerError, fmt.Errorf("failed to decode json %v", err)
+		}
+	}
+	if d.More() {
+		return http.StatusBadRequest, fmt.Errorf("body must contain only one JSON object")
+	}
+
+	return http.StatusOK, nil
 }
 
 func respondWithJSON(status int, body interface{}, w http.ResponseWriter) {
