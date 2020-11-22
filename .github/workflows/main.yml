@@ -41,7 +41,11 @@ jobs:
       - name: Install pact-go
         run: go get github.com/pact-foundation/pact-go@v1
       - name: Verify Pact Installation
-        run: pact-mock-service version
+        run: |
+          pact-mock-service version
+          pact-provider-verifier version
+          pact-broker version
+          pact-go install
       - name: Run go test
         run: |
           cd pact/server
