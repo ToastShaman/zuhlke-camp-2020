@@ -47,6 +47,9 @@ jobs:
           pact-broker version
           pact-go install
       - name: Run go test
+        env:
+          DISABLE_TOOL_VALIDITY_CHECK: true
         run: |
           cd pact/server
+          go get github.com/pact-foundation/pact-go@v1
           go test -v
