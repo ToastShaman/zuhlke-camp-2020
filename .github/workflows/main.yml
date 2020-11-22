@@ -24,6 +24,8 @@ jobs:
   
   build-go:
     runs-on: ubuntu-latest
+    env:
+      GO111MODULE: on
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
@@ -40,7 +42,7 @@ jobs:
         run: go get github.com/pact-foundation/pact-go@v1
       - name: Verify Pact Installation
         run: pact help
-      - name: Run go test 
+      - name: Run go test
         run: |
           cd pact/server
           go get github.com/pact-foundation/pact-go
