@@ -9,9 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -78,12 +76,9 @@ func TestMain(m *testing.M) {
 }
 
 func TestProvider(t *testing.T) {
-	skip, _ := strconv.ParseBool(os.Getenv("DISABLE_TOOL_VALIDITY_CHECK"))
-
 	pact := &dsl.Pact{
 		Host:     "localhost",
 		Provider: "todo_api",
-		DisableToolValidityCheck: skip,
 	}
 
 	request := types.VerifyRequest{
