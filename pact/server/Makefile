@@ -7,7 +7,7 @@ GOFMT_FILES = $(shell go list -f '{{.Dir}}' ./... | grep -v '/pb')
 ARTEFACT_NAME = "todo-server"
 
 test:
-	@go test -v
+	@go test -v $(ARGS)
 .PHONY: test
 
 lbuild: clean

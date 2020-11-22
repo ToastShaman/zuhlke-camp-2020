@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"github.com/pact-foundation/pact-go/dsl"
 	"github.com/pact-foundation/pact-go/types"
@@ -21,6 +22,7 @@ var (
 	serverAddr      = fmt.Sprintf("localhost:%d", pactServerPortAddr)
 	providerBaseURL = fmt.Sprintf("http://localhost:%d", pactServerPortAddr)
 	pactUrls        = findPactFiles("pacts")
+	publish         = flag.Bool("publish", false, "Publishes the PACT verification results")
 )
 
 func findPactFiles(root string) []string {
@@ -79,13 +81,9 @@ func TestProvider(t *testing.T) {
 		Provider: "todo_api",
 	}
 
-	pact.VerifyProvider(t, types.VerifyRequest{
+	request := types.VerifyRequest{
 		ProviderBaseURL: providerBaseURL,
 		PactURLs:        pactUrls,
-		// Uncomment if you want to publish the verification results to a pact broker
-		//PublishVerificationResults: false,
-		//BrokerURL:                  "http://localhost:9292",
-		//ProviderVersion:            "1.0.0",
 		StateHandlers: types.StateHandlers{
 			// Setup any state required by the test
 			// in this case, we ensure there is a "user" in the system
@@ -94,7 +92,7 @@ func TestProvider(t *testing.T) {
 			},
 
 			"an existing todo with id=--MLqrG6LkLkkKc1iMLBt": func() error {
-				repository.Persist(Todo{
+				_ = repository.Persist(Todo{
 					ID:       "-MLqrG6LkLkkKc1iMLBt",
 					Revision: "-MLivp1BrS59mMbSN7Jr",
 					Text:     "Don't forget the milk",
@@ -105,5 +103,13 @@ func TestProvider(t *testing.T) {
 				return nil
 			},
 		},
-	})
+	}
+
+	if *publish {
+		request.PublishVerificationResults = true
+		request.BrokerURL = "http://localhost:9292"
+		request.ProviderVersion = "1.0.0"
+	}
+
+	_, _ = pact.VerifyProvider(t, request)
 }
