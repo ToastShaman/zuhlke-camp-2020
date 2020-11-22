@@ -29,8 +29,15 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '1.15.5'
-      - name: Run go test
+      - name: Install Pact Tools
+        run: |
+          mkdir pact-cli
+          cd pact-cli
+          curl -LO https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v1.88.26/pact-1.88.26-linux-x86_64.tar.gz
+          tar xzf pact-1.88.26-linux-x86_64.tar.gz
+          echo "pact-cli/pact/bin" >> $GITHUB_PATH
+      - name: Run go test 
         run: |
           cd pact/server
           go get github.com/pact-foundation/pact-go
-          go test -v 
+          go test -v
