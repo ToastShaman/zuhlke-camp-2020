@@ -36,6 +36,10 @@ jobs:
           curl -LO https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v1.88.26/pact-1.88.26-linux-x86_64.tar.gz
           tar xzf pact-1.88.26-linux-x86_64.tar.gz
           echo "pact-cli/pact/bin" >> $GITHUB_PATH
+      - name: Install pact-go
+        run: go get github.com/pact-foundation/pact-go@v1
+      - name: Verify Pact Installation
+        run: pact help
       - name: Run go test 
         run: |
           cd pact/server
