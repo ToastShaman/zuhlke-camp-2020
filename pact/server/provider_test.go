@@ -76,12 +76,16 @@ func TestMain(m *testing.M) {
 func TestProvider(t *testing.T) {
 	pact := &dsl.Pact{
 		Host:     "localhost",
-		Provider: "TodoApi",
+		Provider: "todo_api",
 	}
 
 	pact.VerifyProvider(t, types.VerifyRequest{
 		ProviderBaseURL: providerBaseURL,
 		PactURLs:        pactUrls,
+		// Uncomment if you want to publish the verification results to a pact broker
+		//PublishVerificationResults: false,
+		//BrokerURL:                  "http://localhost:9292",
+		//ProviderVersion:            "1.0.0",
 		StateHandlers: types.StateHandlers{
 			// Setup any state required by the test
 			// in this case, we ensure there is a "user" in the system

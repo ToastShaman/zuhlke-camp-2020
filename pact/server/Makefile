@@ -84,3 +84,6 @@ swagger:
 		swaggerapi/swagger-ui
 .PHONY: swagger
 
+download-pact:
+	curl http://localhost:9292/pacts/provider/todo_api/consumer/jvm_todo_client/latest --output ./pacts/jvm_todo_client-todo_api.json
+.PHONY: download-pact
