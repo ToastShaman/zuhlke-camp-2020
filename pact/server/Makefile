@@ -47,6 +47,11 @@ staticcheck:
 	@staticcheck -checks="all" -tests $(GOFMT_FILES)
 .PHONY: staticcheck
 
+lint:
+	@command -v lint > /dev/null 2>&1 || go get golang.org/x/lint/golint
+	@golint
+.PHONY: lint
+
 securitycheck:
 	@command -v gosec > /dev/null 2>&1 || go get github.com/securego/gosec/v2/cmd/gosec
 	@gosec ./...
