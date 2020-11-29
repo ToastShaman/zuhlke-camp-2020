@@ -64,7 +64,7 @@ func stopServer(done chan<- bool) {
 }
 
 func TestMain(m *testing.M) {
-	repository = NewInMemoryTodoRepository()
+	repository = NewInMemoryTodoRepository(10)
 
 	done := make(chan bool, 1)
 

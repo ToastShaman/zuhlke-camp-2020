@@ -46,11 +46,6 @@ func (t Todo) WithNewRevision(id string) Todo {
 	return t
 }
 
-const (
-	// Max number of entries allowed to be stored in the repository
-	maxCapacity = 100
-)
-
 type (
 	TodoRepository interface {
 		FindByID(id string) (Todo, bool)
@@ -61,8 +56,9 @@ type (
 	}
 
 	InMemoryTodoRepository struct {
-		mutex    sync.RWMutex
-		todoByID map[string]Todo
+		mutex       sync.RWMutex
+		todoByID    map[string]Todo
+		maxCapacity int
 	}
 
 	TodoNotFoundError     struct{}
@@ -94,8 +90,11 @@ func NewOutOfCapacityError() *OutOfCapacityError {
 	return &OutOfCapacityError{}
 }
 
-func NewInMemoryTodoRepository() TodoRepository {
-	return &InMemoryTodoRepository{todoByID: make(map[string]Todo)}
+func NewInMemoryTodoRepository(maxCapacity int) TodoRepository {
+	return &InMemoryTodoRepository{
+		todoByID:    make(map[string]Todo),
+		maxCapacity: maxCapacity,
+	}
 }
 
 func (r *InMemoryTodoRepository) FindByID(id string) (Todo, bool) {
@@ -114,7 +113,7 @@ func (r *InMemoryTodoRepository) Persist(todo Todo) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	if len(r.todoByID) >= maxCapacity {
+	if len(r.todoByID) >= r.maxCapacity {
 		return NewOutOfCapacityError()
 	}
 
@@ -510,7 +509,7 @@ var (
 func main() {
 	flag.Parse()
 
-	repository := NewInMemoryTodoRepository()
+	repository := NewInMemoryTodoRepository(100)
 	mux := NewTodoAPI(repository, Options{
 		Cors:            *crs,
 		PushgatewayAddr: *pgwaddr,
