@@ -13,6 +13,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.damnhandy.uri.template.UriTemplateBuilder.var;
@@ -31,6 +32,38 @@ public class HttpTodoClient implements TodoClient {
         this.client = client;
         this.mapper = mapper;
         this.timeout = timeout;
+    }
+
+    @Override
+    public GetTodoResponse get(GetTodoRequest getTodoRequest) {
+        try {
+            String uri = UriTemplate.buildFromTemplate(host)
+                    .literal("/todo")
+                    .path(var("id"))
+                    .build()
+                    .set("id", getTodoRequest.getId())
+                    .expand();
+
+            HttpRequest request = HttpRequest.newBuilder(new URI(uri))
+                    .header("Accept", "application/json")
+                    .GET()
+                    .timeout(timeout)
+                    .build();
+
+            HttpResponse<byte[]> response = client.send(request, BodyHandlers.ofByteArray());
+
+            if (!Objects.equals(200, response.statusCode())) {
+                TodoApiError error = mapper.readValue(response.body(), TodoApiError.class);
+                throw new TodoClientException(response.statusCode(), error);
+            }
+
+            Todo todo = mapper.readValue(response.body(), Todo.class);
+
+            return new GetTodoResponse(todo);
+
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            throw new TodoClientException(e);
+        }
     }
 
     @Override
