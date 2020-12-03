@@ -85,8 +85,6 @@ func TestProvider(t *testing.T) {
 		ProviderBaseURL: providerBaseURL,
 		PactURLs:        pactUrls,
 		StateHandlers: types.StateHandlers{
-			// Setup any state required by the test
-			// in this case, we ensure there is a "user" in the system
 			"an empty repository": func() error {
 				return nil
 			},
