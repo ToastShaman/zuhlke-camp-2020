@@ -8,7 +8,7 @@ Consumer Driven Contract Testing demo using [Pact](https://docs.pact.io/)
 
 1. If you are doing this exercise remotely:
 
-    1. Each of you needs to install [Tuple][5] and register with your **Zuhlke email address**!
+    1. Each of you needs to install [Tuple][4] and register with your **Zuhlke email address**!
 
     1. Ask Kevin for the magic team link
 
@@ -67,3 +67,4 @@ Copied from [TODO-Backend API][3]
 [1]: https://github.com/ToastShaman/zuhlke-camp-2022/blob/open-space/pair-programming/build/pair-programming-guide.pdf
 [2]: https://pact.io/
 [3]: https://todobackend.com/
+[4]: https://tuple.app/
