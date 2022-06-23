@@ -1,4 +1,4 @@
-FROM golang:1.15.5 AS build-stage
+FROM golang:1.18.3 AS build-stage
 
 ARG VERSION
 ARG ARTEFACT_NAME

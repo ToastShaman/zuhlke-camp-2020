@@ -38,22 +38,22 @@ check: spellcheck staticcheck securitycheck vet
 .PHONY: check
 
 spellcheck:
-	@command -v misspell > /dev/null 2>&1 || go get github.com/client9/misspell/cmd/misspell
+	@command -v misspell > /dev/null 2>&1 || go install github.com/client9/misspell/cmd/misspell
 	@misspell -locale="UK" -i="color" -error -source="text" main.go
 .PHONY: spellcheck
 
 staticcheck:
-	@command -v staticcheck > /dev/null 2>&1 || go get honnef.co/go/tools/cmd/staticcheck
+	@command -v staticcheck > /dev/null 2>&1 || go install honnef.co/go/tools/cmd/staticcheck
 	@staticcheck -checks="all" -tests $(GOFMT_FILES)
 .PHONY: staticcheck
 
 lint:
-	@command -v lint > /dev/null 2>&1 || go get golang.org/x/lint/golint
+	@command -v lint > /dev/null 2>&1 || go install golang.org/x/lint/golint
 	@golint
 .PHONY: lint
 
 securitycheck:
-	@command -v gosec > /dev/null 2>&1 || go get github.com/securego/gosec/v2/cmd/gosec
+	@command -v gosec > /dev/null 2>&1 || go install github.com/securego/gosec/v2/cmd/gosec@latest
 	@gosec ./...
 .PHONY: securitycheck
 
