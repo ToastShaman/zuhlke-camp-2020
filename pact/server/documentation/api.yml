@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.3
 
 info:
   title: Todo API
@@ -14,12 +14,12 @@ paths:
     get:
       summary: Returns information about this API
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InfoResponse'
+                $ref: "#/components/schemas/InfoResponse"
               example:
                 version: "80fce9d-20201115"
 
@@ -33,7 +33,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTodoRequest'
+              $ref: "#/components/schemas/CreateTodoRequest"
             example:
               category: shopping
               text: Don't forget the milk
@@ -42,12 +42,12 @@ paths:
                 - groceries
                 - food
       responses:
-        '200':
+        "200":
           description: Successfully created task
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Todo'
+                $ref: "#/components/schemas/Todo"
               example:
                 id: -MMJam1XPAFVTTajrZYB
                 rev: -MMJam1XPAFVTTajrZYC
@@ -57,12 +57,12 @@ paths:
                 tags:
                   - groceries
                   - food
-        '400':
+        "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BadRequestResponse'
+                $ref: "#/components/schemas/BadRequestResponse"
               example:
                 message: Validation failed
                 details:
@@ -72,61 +72,52 @@ components:
   schemas:
     InfoResponse:
       type: object
+      required: [version]
       properties:
         version:
           type: string
-          required: true
 
     CreateTodoRequest:
       type: object
+      required: [category, text, status, tags]
       properties:
         category:
-          required: true
           type: string
         text:
-          required: true
           type: string
         status:
-          required: true
           type: string
         tags:
-          required: true
           type: array
           items:
             type: string
 
     Todo:
       type: object
+      required: [id, rev, category, text, status, tags]
       properties:
         id:
-          required: true
           type: string
         rev:
-          required: true
           type: string
         category:
-          required: true
           type: string
         text:
-          required: true
           type: string
         status:
-          required: true
           type: string
         tags:
-          required: true
           type: array
           items:
             type: string
 
     BadRequestResponse:
       type: object
+      required: [message, details]
       properties:
         message:
-          required: true
           type: string
         details:
-          required: true
           type: array
           items:
             type: string
