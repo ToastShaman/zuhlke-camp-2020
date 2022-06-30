@@ -21,8 +21,8 @@ class TodoClientTest {
     @DisplayName("can create a new createTodoRequest")
     void can_create_todo(WireMockRuntimeInfo wmRuntimeInfo) {
         stubFor(post("/todo")
-                .withHeader("Accept", equalTo("application/json"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Accept", equalTo("application/json; charset=UTF-8"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson("""
                         {
                             "text": "Don't forget the milk",
@@ -36,7 +36,7 @@ class TodoClientTest {
                         """))
                 .willReturn(aResponse()
                         .withStatus(201)
-                        .withHeader("Content-Type", "application/json")
+                        .withHeader("Content-Type", "application/json; charset=UTF-8")
                         .withBody("""
                                 {
                                     "id": "-MLqrG6LkLkkKc1iMLBt",

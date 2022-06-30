@@ -48,7 +48,7 @@ public class HttpTodoClient implements TodoClient {
                     .expand();
 
             HttpRequest request = HttpRequest.newBuilder(new URI(uri))
-                    .header("Accept", "application/json")
+                    .header("Accept", "application/json; charset=UTF-8")
                     .GET()
                     .timeout(timeout)
                     .build();
@@ -80,8 +80,8 @@ public class HttpTodoClient implements TodoClient {
             byte[] payload = mapper.writeValueAsBytes(createTodoRequest);
 
             HttpRequest request = HttpRequest.newBuilder(new URI(uri))
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
+                    .header("Accept", "application/json; charset=UTF-8")
+                    .header("Content-Type", "application/json; charset=UTF-8")
                     .POST(ofByteArray(payload))
                     .timeout(timeout)
                     .build();
@@ -115,8 +115,8 @@ public class HttpTodoClient implements TodoClient {
             byte[] payload = mapper.writeValueAsBytes(updateTodoRequest);
 
             HttpRequest request = HttpRequest.newBuilder(new URI(uri))
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
+                    .header("Accept", "application/json; charset=UTF-8")
+                    .header("Content-Type", "application/json; charset=UTF-8")
                     .PUT(ofByteArray(payload))
                     .timeout(timeout)
                     .build();
@@ -148,7 +148,7 @@ public class HttpTodoClient implements TodoClient {
                     .expand();
 
             HttpRequest request = HttpRequest.newBuilder(new URI(uri))
-                    .header("Accept", "application/json")
+                    .header("Accept", "application/json; charset=UTF-8")
                     .DELETE()
                     .timeout(timeout)
                     .build();

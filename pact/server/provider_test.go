@@ -91,7 +91,7 @@ func TestProvider(t *testing.T) {
 				return nil
 			},
 
-			"an existing todo with id=--MLqrG6LkLkkKc1iMLBt": func() error {
+			"an existing todo with id=-MLqrG6LkLkkKc1iMLBt": func() error {
 				_ = repository.Persist(Todo{
 					ID:       "-MLqrG6LkLkkKc1iMLBt",
 					Revision: "-MLivp1BrS59mMbSN7Jr",

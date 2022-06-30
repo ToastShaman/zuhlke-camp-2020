@@ -493,7 +493,7 @@ func Unmarshall(w http.ResponseWriter, r *http.Request, data interface{}) (int, 
 }
 
 func respondWithJSON(status int, body interface{}, w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(status)
 	if err := json.NewEncoder(w).Encode(body); err != nil {
 		log.Panic(err)

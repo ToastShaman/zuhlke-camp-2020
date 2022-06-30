@@ -12,25 +12,80 @@
       ],
       "request": {
         "body": {
-          "category": "shopping",
-          "status": "TODO",
+          "category": "string",
+          "status": "string",
           "tags": [
-            "groceries",
-            "food"
+            "string",
+            "string"
           ],
-          "text": "Don't forget the milk"
+          "text": "string"
+        },
+        "generators": {
+          "body": {
+            "$.category": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$.status": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$.tags[0]": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$.tags[1]": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$.text": {
+              "size": 20,
+              "type": "RandomString"
+            }
+          }
         },
         "headers": {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json; charset=UTF-8"
         },
         "matchingRules": {
-          "header": {
-            "Content-Type": {
+          "body": {
+            "$.category": {
               "combine": "AND",
               "matchers": [
                 {
-                  "match": "regex",
-                  "regex": "application/json"
+                  "match": "type"
+                }
+              ]
+            },
+            "$.status": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.tags[0]": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.tags[1]": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.text": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
                 }
               ]
             }
@@ -84,7 +139,7 @@
           }
         },
         "headers": {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json; charset=UTF-8"
         },
         "matchingRules": {
           "body": {
@@ -151,7 +206,7 @@
               "matchers": [
                 {
                   "match": "regex",
-                  "regex": "application/json"
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
                 }
               ]
             }
@@ -164,7 +219,7 @@
       "description": "a deletion",
       "providerStates": [
         {
-          "name": "an existing todo with id=--MLqrG6LkLkkKc1iMLBt"
+          "name": "an existing todo with id=-MLqrG6LkLkkKc1iMLBt"
         }
       ],
       "request": {
@@ -216,7 +271,7 @@
           }
         },
         "headers": {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json; charset=UTF-8"
         },
         "matchingRules": {
           "body": {
@@ -283,7 +338,7 @@
               "matchers": [
                 {
                   "match": "regex",
-                  "regex": "application/json"
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
                 }
               ]
             }
@@ -296,7 +351,7 @@
       "description": "a retrieval",
       "providerStates": [
         {
-          "name": "an existing todo with id=--MLqrG6LkLkkKc1iMLBt"
+          "name": "an existing todo with id=-MLqrG6LkLkkKc1iMLBt"
         }
       ],
       "request": {
@@ -348,7 +403,7 @@
           }
         },
         "headers": {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json; charset=UTF-8"
         },
         "matchingRules": {
           "body": {
@@ -415,7 +470,7 @@
               "matchers": [
                 {
                   "match": "regex",
-                  "regex": "application/json"
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
                 }
               ]
             }
@@ -428,43 +483,12 @@
       "description": "an update",
       "providerStates": [
         {
-          "name": "an existing todo with id=--MLqrG6LkLkkKc1iMLBt"
+          "name": "an existing todo with id=-MLqrG6LkLkkKc1iMLBt"
         }
       ],
       "request": {
         "body": {
-          "category": "shopping",
-          "rev": "-MLivp1BrS59mMbSN7Jr",
-          "status": "DONE",
-          "tags": [
-            "groceries",
-            "food"
-          ],
-          "text": "Don't forget the milk"
-        },
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "matchingRules": {
-          "header": {
-            "Content-Type": {
-              "combine": "AND",
-              "matchers": [
-                {
-                  "match": "regex",
-                  "regex": "application/json"
-                }
-              ]
-            }
-          }
-        },
-        "method": "PUT",
-        "path": "/todo/-MLqrG6LkLkkKc1iMLBt"
-      },
-      "response": {
-        "body": {
           "category": "string",
-          "id": "string",
           "rev": "string",
           "status": "string",
           "tags": [
@@ -479,10 +503,6 @@
               "size": 20,
               "type": "RandomString"
             },
-            "$.id": {
-              "size": 20,
-              "type": "RandomString"
-            },
             "$.rev": {
               "size": 20,
               "type": "RandomString"
@@ -506,19 +526,11 @@
           }
         },
         "headers": {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json; charset=UTF-8"
         },
         "matchingRules": {
           "body": {
             "$.category": {
-              "combine": "AND",
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.id": {
               "combine": "AND",
               "matchers": [
                 {
@@ -566,6 +578,36 @@
                 }
               ]
             }
+          }
+        },
+        "method": "PUT",
+        "path": "/todo/-MLqrG6LkLkkKc1iMLBt"
+      },
+      "response": {
+        "body": {
+          "message": "string"
+        },
+        "generators": {
+          "body": {
+            "$.message": {
+              "size": 20,
+              "type": "RandomString"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.message": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
           },
           "header": {
             "Content-Type": {
@@ -573,13 +615,13 @@
               "matchers": [
                 {
                   "match": "regex",
-                  "regex": "application/json"
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
                 }
               ]
             }
           }
         },
-        "status": 200
+        "status": 409
       }
     }
   ],
