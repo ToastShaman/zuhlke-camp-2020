@@ -138,9 +138,7 @@ public class TodoApiPactConsumerTest {
                 .withTags(List.of("groceries", "food"))
                 .build();
 
-        UpdateTodoResponse response = todoClient.update(request);
-
-        Todo actual = response.todo();
+        Todo actual = todoClient.update(request).todo();
 
         assertThat(actual).hasNoNullFieldsOrProperties();
     }
@@ -161,8 +159,8 @@ public class TodoApiPactConsumerTest {
                         .stringType("status")
                         .stringType("category")
                         .array("tags")
-                        .stringType()
-                        .stringType()
+                            .stringType()
+                            .stringType()
                         .closeArray())
                 .matchHeader("Content-Type", "application/json", "application/json")
                 .toPact();
@@ -186,10 +184,54 @@ public class TodoApiPactConsumerTest {
 
         DeleteTodoRequest request = DeleteTodoRequest.builder(existing).build();
 
-        DeleteTodoResponse response = todoClient.delete(request);
-
-        Todo actual = response.todo();
+        Todo actual = todoClient.delete(request).todo();
 
         assertThat(actual).hasNoNullFieldsOrProperties();
+    }
+
+    @Pact(consumer = "jvm_todo_client")
+    public RequestResponsePact getTodo(PactDslWithProvider builder) {
+        return builder
+                .given("an existing todo with id=--MLqrG6LkLkkKc1iMLBt")
+                .uponReceiving("a retrieval")
+                .method("GET")
+                .path("/todo/-MLqrG6LkLkkKc1iMLBt")
+                .willRespondWith()
+                .status(200)
+                .body(new PactDslJsonBody()
+                        .stringType("id")
+                        .stringType("rev")
+                        .stringType("text")
+                        .stringType("status")
+                        .stringType("category")
+                        .array("tags")
+                            .stringType()
+                            .stringType()
+                        .closeArray())
+                .matchHeader("Content-Type", "application/json", "application/json")
+                .toPact();
+    }
+
+    @Test
+    @PactTestFor(pactMethod = "getTodo")
+    void testGetTodo(MockServer mockServer)  {
+        HttpTodoClient todoClient = TodoClient.builder()
+                .setHost(mockServer.getUrl())
+                .build();
+
+        Todo existing = Todo.builder()
+                .withId("-MLqrG6LkLkkKc1iMLBt")
+                .withRev("-MLivp1BrS59mMbSN7Jr")
+                .withText("Don't forget the milk")
+                .withStatus("TODO")
+                .withCategory("shopping")
+                .withTags(List.of("groceries", "food"))
+                .build();
+
+        GetTodoRequest request = new GetTodoRequest("-MLqrG6LkLkkKc1iMLBt");
+
+        Todo todo = todoClient.get(request).todo();
+
+        assertThat(todo).hasNoNullFieldsOrProperties();
     }
 }
