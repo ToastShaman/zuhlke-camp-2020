@@ -22,7 +22,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
-    testImplementation("au.com.dius.pact.consumer:junit5:4.3.9")
+    testImplementation("au.com.dius.pact.consumer:junit5:4.3.10")
 
     testImplementation("org.assertj:assertj-core:3.23.1")
     testImplementation("com.github.tomakehurst:wiremock-jre8:2.33.2")

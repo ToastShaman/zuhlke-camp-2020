@@ -1,11 +1,12 @@
 package com.zuhlke.todo.client;
 
 import au.com.dius.pact.consumer.MockServer;
-import au.com.dius.pact.consumer.dsl.PactBuilder;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
+import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.V4Pact;
+import au.com.dius.pact.core.model.PactSpecVersion;
+import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import com.zuhlke.todo.client.http.HttpTodoClient;
 import com.zuhlke.todo.client.model.*;
@@ -19,13 +20,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 //@formatter:off
 @SuppressWarnings({"unused", "ConstantConditions"})
 @ExtendWith(PactConsumerTestExt.class)
-@PactTestFor(providerName = "todo_api", port = "1234")
+@PactTestFor(providerName = "todo_api", port = "1234", pactVersion = PactSpecVersion.V3)
 public class TodoApiPactConsumerTest {
 
     @Pact(consumer = "jvm_todo_client")
-    public V4Pact createTodo(PactBuilder builder) {
+    public RequestResponsePact createTodo(PactDslWithProvider builder) {
         return builder
-                .usingLegacyDsl()
                 .given("an empty repository")
                 .uponReceiving("a new todo")
                     .method("POST")
@@ -55,7 +55,7 @@ public class TodoApiPactConsumerTest {
                                 .stringType()
                             .closeArray())
                     .matchHeader("Content-Type", "application/json", "application/json")
-                .toPact(V4Pact.class);
+                .toPact();
     }
 
     @Test
@@ -80,9 +80,8 @@ public class TodoApiPactConsumerTest {
     }
 
     @Pact(consumer = "jvm_todo_client")
-    public V4Pact updateTodo(PactBuilder builder) {
+    public RequestResponsePact updateTodo(PactDslWithProvider builder) {
         return builder
-                .usingLegacyDsl()
                 .given("an existing todo with id=--MLqrG6LkLkkKc1iMLBt")
                 .uponReceiving("an update")
                 .method("PUT")
@@ -113,7 +112,7 @@ public class TodoApiPactConsumerTest {
                             .stringType()
                         .closeArray())
                 .matchHeader("Content-Type", "application/json", "application/json")
-                .toPact(V4Pact.class);
+                .toPact();
     }
 
     @Test
@@ -147,9 +146,8 @@ public class TodoApiPactConsumerTest {
     }
 
     @Pact(consumer = "jvm_todo_client")
-    public V4Pact deleteTodo(PactBuilder builder) {
+    public RequestResponsePact deleteTodo(PactDslWithProvider builder) {
         return builder
-                .usingLegacyDsl()
                 .given("an existing todo with id=--MLqrG6LkLkkKc1iMLBt")
                 .uponReceiving("a deletion")
                 .method("DELETE")
@@ -167,7 +165,7 @@ public class TodoApiPactConsumerTest {
                         .stringType()
                         .closeArray())
                 .matchHeader("Content-Type", "application/json", "application/json")
-                .toPact(V4Pact.class);
+                .toPact();
     }
 
     @Test

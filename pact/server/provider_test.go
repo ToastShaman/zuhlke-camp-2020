@@ -4,8 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/pact-foundation/pact-go/dsl"
-	"github.com/pact-foundation/pact-go/types"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -13,14 +11,17 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/pact-foundation/pact-go/dsl"
+	"github.com/pact-foundation/pact-go/types"
 )
 
-const pactServerPortAddr = 2378
+const serverPort = 2378
 
 var (
 	repository      TodoRepository
-	serverAddr      = fmt.Sprintf("localhost:%d", pactServerPortAddr)
-	providerBaseURL = fmt.Sprintf("http://localhost:%d", pactServerPortAddr)
+	serverAddr      = fmt.Sprintf("localhost:%d", serverPort)
+	providerBaseURL = fmt.Sprintf("http://localhost:%d", serverPort)
 	pactUrls        = findPactFiles("pacts")
 	publish         = flag.Bool("publish", false, "Publishes the PACT verification results")
 )
@@ -79,6 +80,7 @@ func TestProvider(t *testing.T) {
 	pact := &dsl.Pact{
 		Host:     "localhost",
 		Provider: "todo_api",
+		LogLevel: "DEBUG",
 	}
 
 	request := types.VerifyRequest{
@@ -109,5 +111,8 @@ func TestProvider(t *testing.T) {
 		request.ProviderVersion = "1.0.0"
 	}
 
-	_, _ = pact.VerifyProvider(t, request)
+	_, err := pact.VerifyProvider(t, request)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

@@ -5,6 +5,13 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -13,12 +20,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/client_golang/prometheus/push"
-	"io"
-	"log"
-	"net/http"
-	"strings"
-	"sync"
-	"time"
 )
 
 type (
