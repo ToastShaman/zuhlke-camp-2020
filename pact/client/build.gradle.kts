@@ -1,6 +1,6 @@
 plugins {
     java
-    id("au.com.dius.pact") version "4.1.0"
+    id("au.com.dius.pact")
 }
 
 repositories {
@@ -8,25 +8,25 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.13.3"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:_"))
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
-    implementation("org.slf4j:slf4j-api:1.7.36")
-    implementation("ch.qos.logback:logback-classic:1.2.11")
+    implementation("org.slf4j:slf4j-api:_")
+    implementation("ch.qos.logback:logback-classic:_")
 
-    implementation("com.damnhandy:handy-uri-templates:2.1.8")
+    implementation("com.damnhandy:handy-uri-templates:_")
 
-    testImplementation(platform("org.junit:junit-bom:5.8.2"))
+    testImplementation(platform(Testing.junit.bom))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
-    testImplementation("au.com.dius.pact.consumer:junit5:4.3.10")
+    testImplementation("au.com.dius.pact.consumer:junit5:_")
 
-    testImplementation("org.assertj:assertj-core:3.23.1")
-    testImplementation("com.github.tomakehurst:wiremock-jre8:2.33.2")
-    testImplementation("org.skyscreamer:jsonassert:1.5.0")
+    testImplementation("org.assertj:assertj-core:_")
+    testImplementation("com.github.tomakehurst:wiremock-jre8:_")
+    testImplementation("org.skyscreamer:jsonassert:_")
 }
 
 group = "com.zuhlke"
