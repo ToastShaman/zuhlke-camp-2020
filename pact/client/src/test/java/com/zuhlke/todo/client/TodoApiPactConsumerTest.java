@@ -22,7 +22,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 //@formatter:off
 @SuppressWarnings({"unused", "ConstantConditions"})
 @ExtendWith(PactConsumerTestExt.class)
-@PactTestFor(providerName = "todo_api", port = "1234", pactVersion = PactSpecVersion.V3)
+@PactTestFor(providerName = "todo_api", pactVersion = PactSpecVersion.V3)
 class TodoApiPactConsumerTest {
 
     @Pact(consumer = "jvm_todo_client")
