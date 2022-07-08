@@ -2,11 +2,12 @@ package com.zuhlke.todo.client.http;
 
 import com.zuhlke.todo.client.model.TodoApiError;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-public class TodoClientException extends RuntimeException {
+public class TodoClientException extends IOException {
 
     private final int status;
     private final TodoApiError error;

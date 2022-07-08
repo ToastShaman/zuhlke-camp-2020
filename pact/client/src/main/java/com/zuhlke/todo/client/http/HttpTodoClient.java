@@ -38,7 +38,7 @@ public class HttpTodoClient implements TodoClient {
     }
 
     @Override
-    public GetTodoResponse get(GetTodoRequest getTodoRequest) {
+    public GetTodoResponse get(GetTodoRequest getTodoRequest) throws TodoClientException {
         try {
             String uri = UriTemplate.buildFromTemplate(host)
                     .literal("/todo")
@@ -55,7 +55,7 @@ public class HttpTodoClient implements TodoClient {
 
             HttpResponse<byte[]> response = client.send(request, BodyHandlers.ofByteArray());
 
-            if (!Objects.equals(200, response.statusCode())) {
+            if (!isSuccess(response)) {
                 TodoApiError error = mapper.readValue(response.body(), TodoApiError.class);
                 throw new TodoClientException(response.statusCode(), error);
             }
@@ -64,13 +64,13 @@ public class HttpTodoClient implements TodoClient {
 
             return new GetTodoResponse(todo);
 
-        } catch (URISyntaxException | IOException | InterruptedException e) {
+        } catch (Exception e) {
             throw new TodoClientException(e);
         }
     }
 
     @Override
-    public CreateTodoResponse create(CreateTodoRequest createTodoRequest) {
+    public CreateTodoResponse create(CreateTodoRequest createTodoRequest) throws TodoClientException {
         try {
             String uri = UriTemplate.buildFromTemplate(host)
                     .literal("/todo")
@@ -88,7 +88,7 @@ public class HttpTodoClient implements TodoClient {
 
             HttpResponse<byte[]> response = client.send(request, BodyHandlers.ofByteArray());
 
-            if (!Set.of(200, 201).contains(response.statusCode())) {
+            if (!isSuccess(response)) {
                 TodoApiError error = mapper.readValue(response.body(), TodoApiError.class);
                 throw new TodoClientException(response.statusCode(), error);
             }
@@ -97,13 +97,13 @@ public class HttpTodoClient implements TodoClient {
 
             return new CreateTodoResponse(todo);
 
-        } catch (URISyntaxException | IOException | InterruptedException e) {
+        } catch (Exception e) {
             throw new TodoClientException(e);
         }
     }
 
     @Override
-    public UpdateTodoResponse update(UpdateTodoRequest updateTodoRequest) {
+    public UpdateTodoResponse update(UpdateTodoRequest updateTodoRequest) throws TodoClientException {
         try {
             String uri = UriTemplate.buildFromTemplate(host)
                     .literal("/todo")
@@ -123,7 +123,7 @@ public class HttpTodoClient implements TodoClient {
 
             HttpResponse<byte[]> response = client.send(request, BodyHandlers.ofByteArray());
 
-            if (!Set.of(200, 201).contains(response.statusCode())) {
+            if (!isSuccess(response)) {
                 TodoApiError error = mapper.readValue(response.body(), TodoApiError.class);
                 throw new TodoClientException(response.statusCode(), error);
             }
@@ -132,13 +132,13 @@ public class HttpTodoClient implements TodoClient {
 
             return new UpdateTodoResponse(todo);
 
-        } catch (URISyntaxException | IOException | InterruptedException e) {
+        } catch (Exception e) {
             throw new TodoClientException(e);
         }
     }
 
     @Override
-    public DeleteTodoResponse delete(DeleteTodoRequest deleteTodoRequest) {
+    public DeleteTodoResponse delete(DeleteTodoRequest deleteTodoRequest) throws TodoClientException {
         try {
             String uri = UriTemplate.buildFromTemplate(host)
                     .literal("/todo")
@@ -155,7 +155,7 @@ public class HttpTodoClient implements TodoClient {
 
             HttpResponse<byte[]> response = client.send(request, BodyHandlers.ofByteArray());
 
-            if (response.statusCode() != 200) {
+            if (!isSuccess(response)) {
                 TodoApiError error = mapper.readValue(response.body(), TodoApiError.class);
                 throw new TodoClientException(response.statusCode(), error);
             }
@@ -164,8 +164,12 @@ public class HttpTodoClient implements TodoClient {
 
             return new DeleteTodoResponse(todo);
 
-        } catch (URISyntaxException | IOException | InterruptedException e) {
+        } catch (Exception e) {
             throw new TodoClientException(e);
         }
+    }
+
+    private static boolean isSuccess(HttpResponse<byte[]> response) {
+        return response.statusCode() / 100 == 2;
     }
 }

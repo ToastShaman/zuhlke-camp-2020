@@ -3,6 +3,7 @@ package com.zuhlke.todo.client;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.zuhlke.todo.client.http.HttpTodoClient;
+import com.zuhlke.todo.client.http.TodoClientException;
 import com.zuhlke.todo.client.model.CreateTodoRequest;
 import com.zuhlke.todo.client.model.CreateTodoResponse;
 import com.zuhlke.todo.client.model.Todo;
@@ -19,7 +20,7 @@ class TodoClientTest {
 
     @Test
     @DisplayName("can create a new createTodoRequest")
-    void can_create_todo(WireMockRuntimeInfo wmRuntimeInfo) {
+    void can_create_todo(WireMockRuntimeInfo wmRuntimeInfo) throws TodoClientException {
         stubFor(post("/todo")
                 .withHeader("Accept", equalTo("application/json; charset=UTF-8"))
                 .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))

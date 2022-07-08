@@ -57,7 +57,7 @@ class TodoApiPactConsumerTest {
 
     @Test
     @PactTestFor(pactMethod = "createTodo")
-    void testCreateTodo(MockServer mockServer)  {
+    void testCreateTodo(MockServer mockServer) throws TodoClientException  {
         HttpTodoClient todoClient = TodoClient.builder()
                 .setHost(mockServer.getUrl())
                 .build();
@@ -109,7 +109,7 @@ class TodoApiPactConsumerTest {
 
     @Test
     @PactTestFor(pactMethod = "updateTodo")
-    void testUpdateTodo(MockServer mockServer)  {
+    void testUpdateTodo(MockServer mockServer) throws TodoClientException  {
         HttpTodoClient todoClient = TodoClient.builder()
                 .setHost(mockServer.getUrl())
                 .build();
@@ -159,7 +159,7 @@ class TodoApiPactConsumerTest {
 
     @Test
     @PactTestFor(pactMethod = "deleteTodo")
-    void testDeleteTodo(MockServer mockServer)  {
+    void testDeleteTodo(MockServer mockServer) throws TodoClientException  {
         HttpTodoClient todoClient = TodoClient.builder()
                 .setHost(mockServer.getUrl())
                 .build();
@@ -204,7 +204,7 @@ class TodoApiPactConsumerTest {
 
     @Test
     @PactTestFor(pactMethod = "getTodo")
-    void testGetTodo(MockServer mockServer)  {
+    void testGetTodo(MockServer mockServer) throws TodoClientException  {
         HttpTodoClient todoClient = TodoClient.builder()
                 .setHost(mockServer.getUrl())
                 .build();
